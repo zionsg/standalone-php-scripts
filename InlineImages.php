@@ -77,7 +77,7 @@ class InlineImages
         $pattern = '~<img[^>]*src=([\'"]*[^\'" ]+[\'"]*)[^>]*>~i';
         $matches = array();
         if (!preg_match_all($pattern, $urlContent, $matches, PREG_OFFSET_CAPTURE)) {
-            return false;
+            return $urlContent;
         };
 
         $result = '';
