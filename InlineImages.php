@@ -6,9 +6,9 @@
  *     $instance = new InlineImages();
  *     echo $instance->processUrl('http://www.example.com');
  *
- * @author Ng Kitt Horng <zion@intzone.com>
- * @link   https://github.com/zionsg/standalone-scripts/InlineImages.php
- * @since  2012-11-03T11:45+08:00
+ * @author  Zion Ng <zion@intzone.com>
+ * @link    https://github.com/zionsg/standalone-php-scripts/
+ * @since   2012-11-03T11:45+08:00
  */
 class InlineImages
 {
