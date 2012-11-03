@@ -29,7 +29,7 @@ class InlineImages
      * Initialize CURL handler
      * Set user agent for CURL to mimic a browser
      *
-     * @param  string $useragent OPTIONAL.
+     * @param  string $userAgent OPTIONAL. User agent used to mimic browser
      * @throws Exception This is thrown if the CURL library is not installed
      */
     public function __construct($userAgent = null)
