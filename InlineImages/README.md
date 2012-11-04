@@ -4,9 +4,11 @@ Inline Images
 **Purpose**<br />
 Read content from an url and converts images into inline images.
 
-**Usage**<br />
+**Usage**
+```php
 $instance = new InlineImages();
 echo $instance('http://www.example.com');
+```
 
 **Example**
 ```html
