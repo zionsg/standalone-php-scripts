@@ -1,10 +1,10 @@
 Inline Images
 =============
 
-**Purpose**
+**Purpose**<br />
 Read content from an url and converts images into inline images.
 
-**Usage**
+**Usage**<br />
 $instance = new InlineImages();
 echo $instance('http://www.example.com');
 
