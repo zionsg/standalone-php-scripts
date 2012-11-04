@@ -67,7 +67,7 @@ class InlineImages
     public function __invoke($url, $userAgent = null)
     {
         $urlContent = $this->getUrlContent($url, $userAgent);
-$urlContent = '<img src="http://docs.intzone.com/thumb01.png">';
+
         // Quotes are included in match as src may not be enclosed in quotes
         // They will be stripped from the individual matches later on
         // Note that the pattern between 'img' and 'src' is not .* as that
