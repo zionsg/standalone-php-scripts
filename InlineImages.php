@@ -28,10 +28,6 @@ class InlineImages
      *
      * Initialize CURL handler
      *
-<<<<<<< HEAD
-=======
-     * @param  string $userAgent OPTIONAL. User agent used to mimic browser
->>>>>>> 9b445009d9c2905cb37d1b655f0ab508eb1a0598
      * @throws Exception This is thrown if the CURL library is not installed
      */
     public function __construct()
@@ -79,7 +75,7 @@ $urlContent = '<img src="http://docs.intzone.com/thumb01.png">';
         $pattern = '~<img[^>]*src=([\'"]*[^\'" ]+[\'"]*)[^>]*>~i';
         $matches = array();
         if (!preg_match_all($pattern, $urlContent, $matches, PREG_OFFSET_CAPTURE)) {
-            return $urlContent;
+            return false;
         };
 
         $result = '';
