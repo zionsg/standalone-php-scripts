@@ -4,10 +4,10 @@
  *
  * Usage:
  *     $instance = new InlineImages();
- *     echo $instance->processUrl('http://www.example.com');
+ *     echo $instance('http://www.example.com');
  *
  * @author  Zion Ng <zion@intzone.com>
- * @link    https://github.com/zionsg/standalone-php-scripts/
+ * @link    [Source] https://github.com/zionsg/standalone-php-scripts/
  * @since   2012-11-03T11:45+08:00
  */
 class InlineImages
@@ -27,23 +27,19 @@ class InlineImages
      * Constructor
      *
      * Initialize CURL handler
-     * Set user agent for CURL to mimic a browser
      *
-     * @param  string $useragent OPTIONAL.
      * @throws Exception This is thrown if the CURL library is not installed
      */
-    public function __construct($userAgent = null)
+    public function __construct()
     {
         // Make sure curl is installed
         if (!function_exists('curl_init')) {
             throw new Exception('CURL library not installed!');
         }
 
-        $this->userAgent = $userAgent ?: $this->userAgent;
         $this->curlHandler = curl_init(); // initialize a new curl resource
         curl_setopt($this->curlHandler, CURLOPT_HEADER, 0); // don't get headers, just the content
         curl_setopt($this->curlHandler, CURLOPT_RETURNTRANSFER, 1); // return value instead of output to browser
-        curl_setopt($this->curlHandler, CURLOPT_USERAGENT, $this->userAgent); // use a user agent to mimic a browser
     }
 
     /**
@@ -59,17 +55,19 @@ class InlineImages
     }
 
     /**
-     * Get url content and replace images with inline images
+     * Method invoked when script calls instance as a function
      *
+     * Get url content and replace images with inline images
      * This works only with images that have absolute paths for their src
      *
      * @param  string $url Url to read
+     * @param  string $useragent OPTIONAL. User agent for CURL to mimic browser
      * @return string
      */
-    public function processUrl($url)
+    public function __invoke($url, $userAgent = null)
     {
-        $urlContent = $this->getUrlContent($url);
-
+        $urlContent = $this->getUrlContent($url, $userAgent);
+$urlContent = '<img src="http://docs.intzone.com/thumb01.png">';
         // Quotes are included in match as src may not be enclosed in quotes
         // They will be stripped from the individual matches later on
         // Note that the pattern between 'img' and 'src' is not .* as that
@@ -83,8 +81,8 @@ class InlineImages
         $result = '';
         $prevOffset = 0;
         foreach ($matches[1] as $match) {
-            list($imageUrl, $offset) = $match;
-            $imageUrl = str_replace(array('\'', '"'), '', $imageUrl); // strip quotes
+            list($imageUrlWithQuotes, $offset) = $match;
+            $imageUrl = str_replace(array('\'', '"'), '', $imageUrlWithQuotes); // strip quotes
 
             $extension = strtolower(pathinfo($imageUrl, PATHINFO_EXTENSION));
             $imageType = isset($this->imageTypes[$extension])
@@ -94,13 +92,13 @@ class InlineImages
             $inlineImage = sprintf(
                 '"data:%s;base64,%s"',
                 $imageType,
-                base64_encode($this->getUrlContent($imageUrl))
+                base64_encode($this->getUrlContent($imageUrl, $userAgent))
             );
 
             // 2nd parameter in substr() is no. of chars to take, NOT ending position
             $result .= substr($urlContent, $prevOffset, ($offset - $prevOffset))
                      . $inlineImage;
-            $prevOffset = $offset + strlen($imageUrl);
+            $prevOffset = $offset + strlen($imageUrlWithQuotes); // must include the quotes
         }
         $result .= substr($urlContent, $prevOffset); // rest of url content
 
@@ -111,10 +109,17 @@ class InlineImages
      * Get url content
      *
      * @param  string $url Url to read
+     * @param  string $useragent OPTIONAL. User agent for CURL to mimic browser
      * @return string
      */
-    public function getUrlContent($url)
+    public function getUrlContent($url, $userAgent = null)
     {
+        // Use a user agent to mimic a browser
+        curl_setopt(
+            $this->curlHandler,
+            CURLOPT_USERAGENT,
+            ($userAgent ?: $this->userAgent)
+        );
         curl_setopt($this->curlHandler, CURLOPT_URL, $url); // set the url to fetch
         return curl_exec($this->curlHandler); // get content
     }
