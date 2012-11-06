@@ -12,14 +12,26 @@
  */
 class InlineImages
 {
+    /**
+     * CURL handler
+     * @var resource
+     */
     protected $curlHandler;
 
+    /**
+     * Image types
+     * @var array
+     */
     protected $imageTypes = array(
         'gif' => 'image/gif',
         'jpg' => 'image/jpeg',
         'png' => 'image/png',
     );
 
+    /**
+     * Default user agent used by CURL to mimic browser
+     * @var string
+     */
     protected $userAgent =
         'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4';
 
