@@ -35,10 +35,11 @@ $params = array(
 echo $instance($params);
 ```
 _BECOMES_
-```html
+<!--
 <style>
   .border { border: 1px solid black; }
 </style>
+-->
 <table id="" class="" width="100%">
   <tr class="">
     <td class="border" width="33.333333333333%">
@@ -73,4 +74,3 @@ _BECOMES_
     </td>
   </tr>
 </table>
-```
