@@ -10,6 +10,7 @@ Output entities in columns
   .border { border: 1px solid black; }
 </style>
 
+<?php
 $entities = array();
 for ($i = 0; $i < 8; $i++) {
     $obj = new stdClass();
@@ -33,6 +34,7 @@ $params = array(
     'tdClass' => 'border',
 );
 echo $instance($params);
+?>
 ```
 _BECOMES_
 <!--
