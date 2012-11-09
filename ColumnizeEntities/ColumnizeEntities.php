@@ -8,7 +8,7 @@
  *     echo $instance($params);
  *
  * @author  Zion Ng <zion@intzone.com>
- * @link    [Source] https://github.com/zionsg/standalone-php-scripts/
+ * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/ColumnizeEntities
  * @since   2012-11-06T23:30+08:00
  */
 class ColumnizeEntities
@@ -23,11 +23,7 @@ class ColumnizeEntities
      * $entityCallback can be used
      *
      * In the scenario where the no. of entities is not divisible by the no.
-     * of columns, the remaining entities are centered
-     *
-     * Entities are listed left to right, eg:
-     *     1  2  3
-     *     4  5  6
+     * of columns, the remaining entities are centered in the last row
      *
      * @param array $params Key-value pairs. All paths should NOT have trailing slashes
      *                      @key int      $cols         DEFAULT=1. No. of columns to split entities in
@@ -37,6 +33,17 @@ class ColumnizeEntities
      *                                                    of url, thumbnail and name is used
      *                      @key string   $nameClass    CSS class for entity name
      *                      @key string   $nameCallback Callback function that takes in entity and returns name
+     *                      @key boolean  $leftToRight  DEFAULT=true. Whether to list entities from left to right
+     *                                                  or top to down.
+     *                                                  Eg: Left to right
+     *                                                      1   2   3
+     *                                                      4   5   6
+     *                                                        7   8
+     *
+     *                                                      Top to down
+     *                                                      1   3   5
+     *                                                      2   4   6
+     *                                                        7   8
      *                      @key string   $tableClass   CSS class for entire table
      *                      @key string   $tableId      'id' attribute for entire table, to facilitate DOM reference
      *                      @key string   $tdClass      CSS class for <td> enclosing entity
@@ -70,6 +77,7 @@ class ColumnizeEntities
                 'entityCallback' => null,
                 'nameClass' => '',
                 'nameCallback' => null,
+                'leftToRight' => true,
                 'tableClass' => '',
                 'tableId' => '',
                 'tdClass' => '',
@@ -105,8 +113,12 @@ class ColumnizeEntities
             for ($col = 0; $col < $cols; $col++) {
                 $output .= "<td class=\"{$tdClass}\" width=\"{$tdWidth}%\">" . PHP_EOL;
 
-                // Get entity
-                $index = ($row * $cols) + $col;
+                // Get entity, depending on listing order (left-right or top-down)
+                if ($leftToRight) {
+                    $index = ($row * $cols) + $col;
+                } else {
+                    $index = ($col * $initialRows) + $row;
+                }
                 if ($index >= $entityCount) {
                     continue;
                 }
