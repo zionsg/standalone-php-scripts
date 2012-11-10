@@ -7,6 +7,8 @@
  *     $params = array();
  *     echo $instance($params);
  *
+ * Result can be formatted with CSS by passing params to instance - @see __invoke()
+ *
  * @author  Zion Ng <zion@intzone.com>
  * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/ColumnizeEntities
  * @since   2012-11-06T23:30+08:00
