@@ -25,47 +25,48 @@ class ColumnizeEntities
      * In the scenario where the no. of entities is not divisible by the no.
      * of columns, the remaining entities are centered in the last row
      *
-     * @param array $params Key-value pairs. All paths should NOT have trailing slashes
-     *                      @key int      $cols         DEFAULT=1. No. of columns to split entities in
-     *                      @key object[] $entities     Array of entity objects
-     *                      @key string   $entityCallback Callback function that takes in entity and returns formatted
-     *                                                    HTML for entity. If this is not defined, the default format
-     *                                                    of url, thumbnail and name is used
-     *                      @key string   $nameClass    CSS class for entity name
-     *                      @key string   $nameCallback Callback function that takes in entity and returns name
-     *                      @key boolean  $leftToRight  DEFAULT=true. Whether to list entities from left to right
-     *                                                  or top to down.
-     *                                                  Eg: Left to right
-     *                                                      1   2   3
-     *                                                      4   5   6
-     *                                                        7   8
+     * @param  array $params Key-value pairs. All paths should NOT have trailing slashes
+     *         @key int      $cols           DEFAULT=1. No. of columns to split entities in
+     *         @key object[] $entities       Array of entity objects
+     *         @key callback $entityCallback Callback function that takes in entity and returns formatted
+     *                                       HTML for entity. If this is not defined, the default format
+     *                                       of url, thumbnail and name is used
+     *         @key string   $nameClass      CSS class for entity name
+     *         @key callback $nameCallback   Callback function that takes in entity and returns name
+     *         @key boolean  $leftToRight    DEFAULT=true. Whether to list entities from left to right
+     *                                       or top to down.
+     *                                       Eg: Left to right
+     *                                           1   2   3
+     *                                           4   5   6
+     *                                             7   8
      *
-     *                                                      Top to down
-     *                                                      1   3   5
-     *                                                      2   4   6
-     *                                                        7   8
-     *                      @key string   $tableClass   CSS class for entire table
-     *                      @key string   $tableId      'id' attribute for entire table, to facilitate DOM reference
-     *                      @key string   $tdClass      CSS class for <td> enclosing entity
-     *                      @key string   $trClass      CSS class for <tr> enclosing entity <td>
-     *                      @key string   $urlCallback  Callback function that takes in entity and returns entity url
-     *                      @key string   $urlClass     CSS class for entity url
-     *                      @key string   $urlTarget    Target for entity url. <a target="<$urlTarget>"...
+     *                                           Top to down
+     *                                           1   3   5
+     *                                           2   4   6
+     *                                             7   8
+     *         @key string   $tableClass     CSS class for entire table
+     *         @key string   $tableId        'id' attribute for entire table, to facilitate DOM reference
+     *         @key string   $tdClass        CSS class for <td> enclosing entity
+     *         @key string   $trClass        CSS class for <tr> enclosing entity <td>
+     *         @key callback $urlCallback    Callback function that takes in entity and returns entity url
+     *         @key string   $urlClass       CSS class for entity url
+     *         @key string   $urlTarget      Target for entity url. <a target="<$urlTarget>"...
      *
-     *                      Keys for drawing thumbnail images:
-     *                      @key boolean $drawThumbnailBox   DEFAULT=true. Whether to enclose thumbnail <img> in <td>.
-     *                                                       If true, box will be drawn even if there's no thumbnail
-     *                      @key string  $thumbnailBoxClass  CSS class for <td> box enclosing thumbnail image
-     *                      @key string  $thumbnailClass     CSS class for thumbnail image
-     *                      @key string  $thumbnailCallback  Callback function that takes in entity and returns
-     *                                                       thumbnail filename
-     *                      @key string  $thumbnailPath      Folder path relative to web root where thumbnail is stored
-     *                      @key int     $maxThumbnailHeight Maximum height constraint for thumbnail image
-     *                                                       If set to 0, "height" attribute will be skipped in output
-     *                      @key int     $maxThumbnailWidth  Maximum width constraint for thumbnail image
-     *                                                       If set to 0, "width" attribute will be skipped in output
-     *                      @key string  $webRoot            Absolute path for web root. Used for retrieving thumbnail
+     *         Keys for drawing thumbnail images:
+     *         @key boolean  $drawThumbnailBox   DEFAULT=true. Whether to enclose thumbnail <img> in <td>.
+     *                                           If true, box will be drawn even if there's no thumbnail
+     *         @key string   $thumbnailBoxClass  CSS class for <td> box enclosing thumbnail image
+     *         @key string   $thumbnailClass     CSS class for thumbnail image
+     *         @key callback $thumbnailCallback  Callback function that takes in entity and returns
+     *                                           thumbnail filename
+     *         @key string   $thumbnailPath      Folder path relative to web root where thumbnail is stored
+     *         @key int      $maxThumbnailHeight Maximum height constraint for thumbnail image
+     *                                           If set to 0, "height" attribute will be skipped in output
+     *         @key int      $maxThumbnailWidth  Maximum width constraint for thumbnail image
+     *                                           If set to 0, "width" attribute will be skipped in output
+     *         @key string   $webRoot            Absolute path for web root. Used for retrieving thumbnail
      * @return string
+     * @throws InvalidArgumentException When any of the callbacks is not callable
      */
     public function __invoke(array $params)
     {
@@ -127,23 +128,17 @@ class ColumnizeEntities
                 // Get entity output
                 $entityOutput = '';
                 if ($entityCallback) {
+                    if (!is_callable($entityCallback)) {
+                        throw new InvalidArgumentException('Invalid entity callback provided');
+                    }
                     $entityOutput = $entityCallback($entity) . PHP_EOL;
                 } else {
-                    // Get entity url
-                    $url = null;
-                    if ($urlCallback) {
-                        $url = $urlCallback($entity);
-                    }
-
-                    // Get entity name
-                    $name = null;
-                    if ($nameCallback) {
-                        $name = $nameCallback($entity);
-                    }
-
                     // Get entity thumbnail
                     $thumbnail = null;
                     if ($thumbnailCallback) {
+                        if (!is_callable($thumbnailCallback)) {
+                            throw new InvalidArgumentException('Invalid thumbnail callback provided');
+                        }
                         $thumbnail = $thumbnailCallback($entity);
                     }
 
@@ -190,14 +185,30 @@ class ColumnizeEntities
                         }
                     } // end draw thumbnail
 
-                    // Output entity
-                    if ($url !== null) {
+                    // Get entity url
+                    $url = null;
+                    if ($urlCallback) {
+                        if (!is_callable($urlCallback)) {
+                            throw new InvalidArgumentException('Invalid url callback provided');
+                        }
+                        $url = $urlCallback($entity);
                         $entityOutput .= "<a class=\"{$urlClass}\" target=\"{$urlTarget}\" href=\"{$url}\">" . PHP_EOL;
                     }
+
+                    // Insert thumbnail output
                     $output .= $thumbnailOutput;
-                    if ($name !== null) {
+
+                    // Get entity name
+                    $name = null;
+                    if ($nameCallback) {
+                        if (!is_callable($nameCallback)) {
+                            throw new InvalidArgumentException('Invalid name callback provided');
+                        }
+                        $name = $nameCallback($entity);
                         $entityOutput .= "<div class=\"{$nameClass}\">{$name}</div>" . PHP_EOL;
                     }
+
+                    // Close </a> if there is an entity url
                     if ($url !== null) {
                         $entityOutput .= '</a>' . PHP_EOL;
                     }
