@@ -33,6 +33,7 @@ echo '[NO FILTER]<br />' . $instance();
 ?>
 ```
 _BECOMES_
+```html
 <!--
 <style>
   .directoryListing { font-family: "Courier New"; }
@@ -67,3 +68,4 @@ Total folders and files filtered out: 0<br /><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder level2">* FOLDER * grandchild * 15375 bytes * 15.01 KiB * Folders: 0 * Files: 1 * Total nested folders: 0 * Total nested files: 1 *</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file level2">* File * ignore.zip * 15375 bytes * 15.01 KiB *</span><br />
 </div>
+```
