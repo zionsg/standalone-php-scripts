@@ -33,7 +33,7 @@ echo '[NO FILTER]<br />' . $instance();
 ?>
 ```
 _BECOMES_
-
+<!--
 <style>
   .directoryListing { font-family: "Courier New"; }
   .folder { font-weight: bold; }
@@ -41,6 +41,7 @@ _BECOMES_
   .level0 { color: red; }
   .file.level0 { color: green; }
 </style>
+-->
 [WITH FILTER]<br /><div class="directoryListing">
 Directory Listing for D:\testParent<br /><br />
 Total folders and files filtered out: 2<br /><br />
