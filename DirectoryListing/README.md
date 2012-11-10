@@ -33,7 +33,10 @@ echo '[NO FILTER]<br />' . $instance();
 ?>
 ```
 _BECOMES_
-```html
+
+<!-- Colors not supported in Markdown yet, so using screenshot instead -->
+![Screenshot of result](screenshot.png)
+
 <!--
 <style>
   .directoryListing { font-family: "Courier New"; }
@@ -43,7 +46,11 @@ _BECOMES_
   .file.level0 { color: green; }
 </style>
 -->
-[WITH FILTER]<br /><div class="directoryListing">
+<!--
+[WITH FILTER]
+
+<div class="directoryListing" style="font-family:Courier New;">
+
 Directory Listing for D:\testParent<br /><br />
 Total folders and files filtered out: 2<br /><br />
 * Type * Path * Total Size (Bytes) * Total Size (Human-Readable) * Folders * Files * Total Nested Folders * Total Nested Files *<br /><br />
@@ -53,8 +60,14 @@ Total folders and files filtered out: 2<br /><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="file level1">* File * Getting-Started-with-Zend-Framework-2.pdf * 712754 bytes * 696.05 KiB *</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="file level1">* File * sample.txt * 4 bytes * 4.00 B *</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder level2">* FOLDER * grandchild * 0 bytes * 0.00 B * Folders: 0 * Files: 0 * Total nested folders: 0 * Total nested files: 0 *</span><br />
+
 </div>
-<br /><br />[NO FILTER]<br /><div class="directoryListing">
+
+
+[NO FILTER]
+
+<div class="directoryListing">
+
 Directory Listing for D:\testParent<br /><br />
 Total folders and files filtered out: 0<br /><br />
 * Type * Path * Total Size (Bytes) * Total Size (Human-Readable) * Folders * Files * Total Nested Folders * Total Nested Files *<br /><br />
@@ -67,5 +80,6 @@ Total folders and files filtered out: 0<br /><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file level2">* File * skip.exe * 63210976 bytes * 60.28 MiB *</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder level2">* FOLDER * grandchild * 15375 bytes * 15.01 KiB * Folders: 0 * Files: 1 * Total nested folders: 0 * Total nested files: 1 *</span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file level2">* File * ignore.zip * 15375 bytes * 15.01 KiB *</span><br />
+
 </div>
-```
+-->
