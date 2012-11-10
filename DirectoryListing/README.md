@@ -35,7 +35,7 @@ echo '[NO FILTER]<br />' . $instance();
 _BECOMES_
 
 <!-- Colors not supported in Markdown yet, so using screenshot instead -->
-![Screenshot of result](DirectoryListing/screenshot.png)
+![Screenshot of result](https://raw.github.com/zionsg/DirectoryListing/master/screenshot.png)
 
 <!--
 <style>
