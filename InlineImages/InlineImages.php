@@ -7,7 +7,7 @@
  *     echo $instance('http://www.example.com');
  *
  * @author  Zion Ng <zion@intzone.com>
- * @link    [Source] https://github.com/zionsg/standalone-php-scripts/
+ * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/InlineImages
  * @since   2012-11-03T11:45+08:00
  */
 class InlineImages
