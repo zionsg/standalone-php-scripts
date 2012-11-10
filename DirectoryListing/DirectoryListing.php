@@ -114,7 +114,9 @@ class DirectoryListing
         $output = '';
         if ($level == 0) {
             $output = 'Directory Listing for ' . $info['path'] . '<br /><br />' . PHP_EOL
-                    . 'Total folders and files filtered out: ' . $info['totalFiltered'] . '<br /><br />' . PHP_EOL
+                    . 'Total folders filtered out: ' . $info['totalFolderFiltered'] . '<br />' . PHP_EOL
+                    . 'Total files filtered out (excluding those in filtered folders): '
+                    . $info['totalFileFiltered'] . '<br /><br />' . PHP_EOL
                     . '* Type * Path * Total Size (Bytes) * Total Size (Human-Readable) '
                     . '* Folders * Files * Total Nested Folders * Total Nested Files *'
                     . '<br /><br />' . PHP_EOL;
@@ -181,10 +183,11 @@ class DirectoryListing
             'fileCount'   => 0,      // file count (no nesting) in current folder
             'totalFolderCount' => 0, // total nested subfolders
             'totalFileCount'   => 0, // total nested files in folder and subfolders
-            'totalFiltered'    => 0, // total no. of nested folders and files filtered
-            'totalSize'        => 0, // total size of folder including nesting
-            'folders' => array(),    // store descriptions of subfolders and their files
-            'files'   => array(),    // store descriptions of files in $currDir
+            'totalFolderFiltered' => 0, // total no. of nested folders filtered
+            'totalFileFiltered'   => 0, // total no. of nested files filtered
+            'totalSize' => 0, // total size of folder including nesting
+            'folders'   => array(),    // store descriptions of subfolders and their files
+            'files'     => array(),    // store descriptions of files in $currDir
         );
 
         foreach ((scandir($currDir) ?: array()) as $filename) {
@@ -193,25 +196,30 @@ class DirectoryListing
             }
 
             $filePath = $currDir . '/' . $filename;
-            if ($filterCallback && !$filterCallback($filePath)) {
-                $info['totalFiltered']++;
-                continue;
-            }
 
             if (is_file($filePath)) { // file
+                if ($filterCallback && !$filterCallback($filePath)) {
+                    $info['totalFileFiltered']++;
+                    continue;
+                }
                 $fileSize = filesize($filePath);
                 $info['files'][$filename] = $fileSize;
                 $info['fileCount']++;
                 $info['totalFileCount']++;
                 $info['totalSize'] += $fileSize;
             } else if (is_dir($filePath)) { // subfolder
+                if ($filterCallback && !$filterCallback($filePath)) {
+                    $info['totalFolderFiltered']++;
+                    continue;
+                }
                 $subfolderInfo = $this->getListing($filePath, $filterCallback);
                 $info['folders'][$filename] = $subfolderInfo;
                 $info['folderCount']++;
                 $info['totalFolderCount']++;
                 $info['totalFolderCount'] += $subfolderInfo['totalFolderCount'];
                 $info['totalFileCount']   += $subfolderInfo['totalFileCount'];
-                $info['totalFiltered'] += $subfolderInfo['totalFiltered'];
+                $info['totalFolderFiltered'] += $subfolderInfo['totalFolderFiltered'];
+                $info['totalFileFiltered'] += $subfolderInfo['totalFileFiltered'];
                 $info['totalSize'] += $subfolderInfo['totalSize'];
             }
         } // end foreach $currDir
