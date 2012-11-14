@@ -10,3 +10,6 @@ Standalone PHP Scripts
 
 - InlineImages<br />
   Get url content and replace images with inline images.
+
+- VirtualHosts<br />
+  Generate list and config for port-based virtual hosts on local development machine.
