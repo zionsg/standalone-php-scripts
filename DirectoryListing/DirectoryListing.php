@@ -101,7 +101,7 @@ class DirectoryListing
                 : sprintf('%.2f %s%s', $bytes * 1024, end($this->_prefix), $byteString));
     }
 
-    /*
+    /**
      * Recursively format directory listing
      *
      * @param  array  $info   Directory info from getListing()
