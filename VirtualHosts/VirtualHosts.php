@@ -90,9 +90,7 @@ class VirtualHosts
 
             // Show config for Apache httpd.conf
             if ($showConfig) {
-                $output .= '<br /><br />' . PHP_EOL
-                         . '[CONFIG FOR APACHE HTTPD.CONF]<br /><br />' . PHP_EOL;
-
+                $output .= '[CONFIG FOR APACHE HTTPD.CONF]<br />' . PHP_EOL;
 
                 foreach ($hosts as $website => $port) {
                     $hostConfig = sprintf(
