@@ -166,7 +166,7 @@ class ColumnizeEntities
                             }
 
                             $thumbnailOutput = sprintf(
-                                '<img %s src="%s" %s %s />' . PHP_EOL,
+                                '<img %s align="center" src="%s" %s %s />' . PHP_EOL,
                                 ($thumbnailClass ? "class=\"{$thumbnailClass}\"" : ''),
                                 $thumbnailPath . '/' . $thumbnail,
                                 ($maxThumbnailWidth == 0 ? '' : "width=\"{$width}\""),
