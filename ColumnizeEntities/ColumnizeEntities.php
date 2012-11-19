@@ -102,6 +102,8 @@ class ColumnizeEntities
         );
         extract($params);
 
+        // Convert associative array to numerically indexed array
+        $entities = array_values($entities);
         $entityCount = count($entities);
         if ($entityCount == 0) return '';
 
