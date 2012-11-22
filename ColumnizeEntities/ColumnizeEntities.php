@@ -36,8 +36,8 @@ class ColumnizeEntities
      *         @key string   $nameClass      CSS class for entity name
      *         @key callback $nameCallback   Callback function that takes in entity and returns name
      *         @key boolean  $leftToRight    DEFAULT=true. Whether to list entities from left to right
-     *                                       or top to down.
-     *                                       Eg: Left to right
+     *                                       or top to down. Examples with $remainderAlign set to 'center'
+     *                                           Left to right
      *                                           1   2   3
      *                                           4   5   6
      *                                             7   8
@@ -46,6 +46,8 @@ class ColumnizeEntities
      *                                           1   3   5
      *                                           2   4   6
      *                                             7   8
+     *         @key string   $remainderAlign DEFAULT='center'. How to align the remainder entities in
+     *                                       the last row. Possible values: left, center.
      *         @key string   $tableClass     CSS class for entire table
      *         @key string   $tableId        'id' attribute for entire table, to facilitate DOM reference
      *         @key string   $tdClass        CSS class for <td> enclosing entity
@@ -81,6 +83,7 @@ class ColumnizeEntities
                 'nameClass' => '',
                 'nameCallback' => null,
                 'leftToRight' => true,
+                'remainderAlign' => 'center',
                 'tableClass' => '',
                 'tableId' => '',
                 'tdClass' => '',
@@ -107,16 +110,25 @@ class ColumnizeEntities
         $entityCount = count($entities);
         if ($entityCount == 0) return '';
 
-        $cols = min($cols, $entityCount); // no point displaying 2 items in 3 cols
-        $initialRows = (int) floor($entityCount / $cols);
+        // Calculate initial rows
+        if (!in_array($remainderAlign, array('left', 'center'))) {
+            $remainderAlign = 'center';
+        }
+        if ($remainderAlign == 'left') {
+            $initialRows = (int) ceil($entityCount / $cols);
+        } elseif ($remainderAlign == 'center') {
+            $cols = min($cols, $entityCount);
+            $initialRows = (int) floor($entityCount / $cols);
+        }
         $tdWidth = 100 / $cols;
         $entitiesProcessed = 0;
 
-        $output = "<table id=\"{$tableId}\" class=\"{$tableClass}\" width=\"100%\">" . PHP_EOL;
+        // Process entities and generate output
+        $output = sprintf('<table id="%s" class="%s" width="100%%">' . PHP_EOL, $tableId, $tableClass);
         for ($row = 0; $row < $initialRows; $row++) {
-            $output .= "<tr class=\"{$trClass}\">" . PHP_EOL;
+            $output .= sprintf('<tr class="%s">' . PHP_EOL, $trClass);
             for ($col = 0; $col < $cols; $col++) {
-                $output .= "<td class=\"{$tdClass}\" width=\"{$tdWidth}%\">" . PHP_EOL;
+                $output .= sprintf('<td class="%s" width="%d%%">' . PHP_EOL, $tdClass, $tdWidth);
 
                 // Get entity, depending on listing order (left-right or top-down)
                 if ($leftToRight) {
@@ -125,12 +137,14 @@ class ColumnizeEntities
                     $index = ($col * $initialRows) + $row;
                 }
                 if ($index >= $entityCount) {
+                    $output .= '</td>' . PHP_EOL; // remember to close td
                     continue;
                 }
                 $entity = $entities[$index];
 
                 // Get entity output
                 $entityOutput = '';
+
                 if ($entityCallback) {
                     if (!is_callable($entityCallback)) {
                         throw new InvalidArgumentException('Invalid entity callback provided');
@@ -166,8 +180,8 @@ class ColumnizeEntities
                             }
 
                             $thumbnailOutput = sprintf(
-                                '<img %s align="center" src="%s" %s %s />' . PHP_EOL,
-                                ($thumbnailClass ? "class=\"{$thumbnailClass}\"" : ''),
+                                '<img class="%s" align="center" src="%s" %s %s />' . PHP_EOL,
+                                $thumbnailClass,
                                 $thumbnailPath . '/' . $thumbnail,
                                 ($maxThumbnailWidth == 0 ? '' : "width=\"{$width}\""),
                                 ($maxThumbnailHeight == 0 ? '' : "height=\"{$height}\"")
@@ -177,11 +191,11 @@ class ColumnizeEntities
                         if ($drawThumbnailBox) {
                             $thumbnailOutput = sprintf(
                                 '<table align="center" cellspacing="0" cellpadding="0">' . PHP_EOL
-                                . '<tr><td %s %s %s align="center" valign="middle">' . PHP_EOL
+                                . '<tr><td class="%s" %s %s align="center" valign="middle">' . PHP_EOL
                                 . '%s'
                                 . '</td></tr>' . PHP_EOL
                                 . '</table>' . PHP_EOL,
-                                ($thumbnailBoxClass ? "class=\"{$thumbnailBoxClass}\"" : ''),
+                                $thumbnailBoxClass,
                                 ($maxThumbnailWidth == 0 ? '' : "width=\"{$maxThumbnailWidth}\""),
                                 ($maxThumbnailHeight == 0 ? '' : "height=\"{$maxThumbnailHeight}\""),
                                 $thumbnailOutput
@@ -196,7 +210,10 @@ class ColumnizeEntities
                             throw new InvalidArgumentException('Invalid url callback provided');
                         }
                         $url = $urlCallback($entity);
-                        $entityOutput .= "<a class=\"{$urlClass}\" target=\"{$urlTarget}\" href=\"{$url}\">" . PHP_EOL;
+                        $entityOutput .= sprintf(
+                            '<a class="%s" target="%s" href="%s">' . PHP_EOL,
+                            $urlClass, $urlTarget, $url
+                        );
                     }
 
                     // Insert thumbnail output
@@ -209,7 +226,7 @@ class ColumnizeEntities
                             throw new InvalidArgumentException('Invalid name callback provided');
                         }
                         $name = $nameCallback($entity);
-                        $entityOutput .= "<div class=\"{$nameClass}\">{$name}</div>" . PHP_EOL;
+                        $entityOutput .= sprintf('<div class="%s">%s</div>' . PHP_EOL, $nameClass, $name);
                     }
 
                     // Close </a> if there is an entity url
