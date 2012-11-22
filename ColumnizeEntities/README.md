@@ -31,6 +31,8 @@ $params = array(
         );
         return $output;
     },
+    'leftToRight' => true,
+    'remainderAlign' => 'center',
     'tdClass' => 'border',
 );
 echo $instance($params);
