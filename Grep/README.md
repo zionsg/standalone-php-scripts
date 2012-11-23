@@ -13,6 +13,7 @@ $params = array(
     'pattern' => 'test[0-9]{3}',
 );
 echo $instance($params);
+?>
 ```
 _BECOMES_
 
