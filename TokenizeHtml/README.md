@@ -1,13 +1,13 @@
-Tokenize
-========
+Tokenize Html
+=============
 
 **Purpose**<br />
-Tokenize string into words and HTML tags
+Tokenize HTML content into words and tags
 
 **Example**
 ```php
 <?php
-$instance = new Tokenize();
+$instance = new TokenizeHtml();
 $html = 'The quick <div>brown <a href="http://fox.com">fox '
       . '<a href="jumps.jpg">jumps</a></a> over</div> the lazy old dog. ';
 var_dump($instance($html));

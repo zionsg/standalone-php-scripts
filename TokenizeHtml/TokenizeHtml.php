@@ -1,9 +1,9 @@
 <?php
 /**
- * Tokenize string into words and HTML tags
+ * Tokenize HTML content into words and tags
  *
  * Usage:
- *     $instance = new Tokenize();
+ *     $instance = new TokenizeHtml();
  *     $html = '';
  *     print_r($instance($html));
  *
@@ -11,18 +11,18 @@
  * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/Tokenize
  * @since   2012-11-23T22:00+08:00
  */
-class Tokenize
+class TokenizeHtml
 {
     /**
      * __invoke
      *
-     * @see    tokenizeHtml()
+     * @see    tokenize()
      * @param  string $text Text to tokenize
      * @return array Array of tokens
      */
     public function __invoke($text)
     {
-        return $this->tokenizeHtml($text);
+        return $this->tokenize($text);
     }
 
     /**
@@ -38,7 +38,7 @@ class Tokenize
      *                         Level of recursion
      * @return array Array of tokens
      */
-    protected function tokenizeHtml($text, $pattern = null, $level = 0)
+    protected function tokenize($text, $pattern = null, $level = 0)
     {
         $combinedPattern = '~^([^<]*)(<([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>)(.*)(</\3>)(.*)$~'; // recursion on all groups
         $wordPattern = '/([^ ]*)( .*)/'; // recursion on all groups
@@ -83,7 +83,7 @@ class Tokenize
                     continue;
                 }
 
-                $result = $this->tokenizeHtml($matchText, null, $level + 1);
+                $result = $this->tokenize($matchText, null, $level + 1);
                 if (empty($result)) {
                     continue;
                 }
@@ -106,7 +106,7 @@ class Tokenize
         // iteration
         if ($pattern == $combinedPattern) {
             // Test word pattern last as it is the most general
-            $result = $this->tokenizeHtml($text, $wordPattern, $level);
+            $result = $this->tokenize($text, $wordPattern, $level);
             if (!empty($result)) {
                 return $result;
             }
@@ -115,6 +115,6 @@ class Tokenize
         // Base case: No pattern matches - return text
         return $text;
 
-    } // end function tokenizeHtml
+    } // end function tokenize
 
 } // end class
