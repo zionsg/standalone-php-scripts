@@ -26,7 +26,7 @@ class TokenizeHtml
     }
 
     /**
-     * Tokenize string into words and HTML tags
+     * Tokenize HTML content into words and tags
      *
      * This function does not handle line breaks at the moment
      * Assumes HTML is valid and that there are no misplaced or broken tags
