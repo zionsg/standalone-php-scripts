@@ -17,11 +17,11 @@ class Grep
      * __invoke
      *
      * @params array $params Key-value pairs with the following keys:
-     *         @key array   $exclude   Files to exclude. Can include wildcard, eg. *.jpg
-     *         @key array   $include   Files to include. Can include wildcard, eg. *.ph*
-     *         @key string  $pattern   Regular expression pattern to use for search
-     *         @key boolean $recursive DEFAULT=true. Whether to search thru subdirectories
-     *                                 recursively
+     *         'exclude'   array   Files to exclude. Can include wildcard, eg. *.jpg
+     *         'include'   array   Files to include. Can include wildcard, eg. *.ph*
+     *         'pattern'   string  Regular expression pattern to use for search
+     *         'recursive' boolean DEFAULT=true. Whether to search thru subdirectories
+     *                             recursively
      * @return string Output from 'grep' shell command sorted in ascending order
      * @throws RuntimeException         If 'grep' command is not available as a shell command
      * @throws InvalidArgumentException If $pattern is empty, or $exclude/$include are not arrays
