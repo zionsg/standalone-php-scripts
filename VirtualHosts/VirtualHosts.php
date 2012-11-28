@@ -26,15 +26,15 @@ class VirtualHosts
      * Method invoked when instance is called as a function
      *
      * @param  array $params Key-value pairs with the following keys
-     *         @key callback $filterFunction Callback to filter directories.
-     *                                       Takes in folder name and returns true
-     *                                       if passed, false if failed
-     *         @key string   $path       DEFAULT='${path}'
-     *         @key string   $scheme     DEFAULT='http'
-     *         @key string   $server     DEFAULT='127.0.0.1'
-     *         @key string   $showConfig DEFAULT=true. Whether to show
-     *                                   config to use for Apache
-     *         @key string   $webFolder  DEFAULT='www'. Eg: public_html, htdocs
+     *         'filterFunction' callback Callback to filter directories.
+     *                                  Takes in folder name and returns true
+     *                                  if passed, false if failed
+     *         'path'           string  DEFAULT='${path}'
+     *         'scheme'         string  DEFAULT='http'
+     *         'server'         string  DEFAULT='127.0.0.1'
+     *         'showConfig'     string  DEFAULT=true. Whether to show
+     *                                  config to use for Apache
+     *         'webFolder'      string  DEFAULT='www'. Eg: public_html, htdocs
      * @return string
      */
     public function __invoke(array $params = array())
