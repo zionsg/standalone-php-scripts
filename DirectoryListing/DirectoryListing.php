@@ -53,7 +53,7 @@ class DirectoryListing
     }
 
     /**
-     * Method invoked when instance is called as a function
+     * __invoke
      *
      * Retrieves directory listing and formats it
      *
@@ -227,4 +227,4 @@ class DirectoryListing
         return $info;
     } //end function getListing
 
-} // end class
+}

@@ -67,7 +67,7 @@ class InlineImages
     }
 
     /**
-     * Method invoked when script calls instance as a function
+     * __invoke
      *
      * Get url content and replace images with inline images
      * This works only with images that have absolute paths for their src
@@ -136,4 +136,4 @@ class InlineImages
         return curl_exec($this->curlHandler); // get content
     }
 
-} // end class
+}

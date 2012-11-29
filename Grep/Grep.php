@@ -91,4 +91,4 @@ class Grep
         );
     } // end function __invoke
 
-} // end class
+}

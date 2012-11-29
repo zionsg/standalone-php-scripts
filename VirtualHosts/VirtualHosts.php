@@ -23,7 +23,7 @@
 class VirtualHosts
 {
     /**
-     * Method invoked when instance is called as a function
+     * __invoke
      *
      * @param  array $params Key-value pairs with the following keys
      *         'filterFunction' callback Callback to filter directories.
@@ -114,4 +114,4 @@ class VirtualHosts
         return $output;
     } // end function __invoke
 
-} // end class
+}

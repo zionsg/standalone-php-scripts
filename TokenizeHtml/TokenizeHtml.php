@@ -16,6 +16,9 @@ class TokenizeHtml
     /**
      * __invoke
      *
+     * This is used as a proxy as tokenize() has other arguments meant for
+     * its internal use only
+     *
      * @see    tokenize()
      * @param  string $text Text to tokenize
      * @return array Array of tokens
@@ -32,10 +35,8 @@ class TokenizeHtml
      * Assumes HTML is valid and that there are no misplaced or broken tags
      *
      * @param  string $text    Text to tokenize
-     * @param  string $pattern Not for user to specify. For use in internal recursion.
-     *                         Regex pattern to use
-     * @param  int    $level   Not for user to specify. For debugging use in internal recursion.
-     *                         Level of recursion
+     * @param  string $pattern For use in internal recursion. Regex pattern to use
+     * @param  int    $level   For debugging use in internal recursion. Level of recursion
      * @return array Array of tokens
      */
     protected function tokenize($text, $pattern = null, $level = 0)
@@ -102,8 +103,7 @@ class TokenizeHtml
         // Try the other patterns only if previous patterns were tested, else will
         // have infinite recursion
 
-        // Test word pattern next if combined pattern has no matches in this
-        // iteration
+        // Test word pattern next if combined pattern has no matches in this iteration
         if ($pattern == $combinedPattern) {
             // Test word pattern last as it is the most general
             $result = $this->tokenize($text, $wordPattern, $level);
@@ -114,7 +114,6 @@ class TokenizeHtml
 
         // Base case: No pattern matches - return text
         return $text;
-
     } // end function tokenize
 
-} // end class
+}
