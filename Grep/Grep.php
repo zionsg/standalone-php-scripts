@@ -29,8 +29,10 @@ class Grep
     public function __invoke(array $params = array())
     {
         // Check if 'grep' is available as a shell command
-        $returnValue = shell_exec('grep');
-        if (empty($returnValue)) {
+        $output = array();
+        $returnValue = null;
+        exec('grep', $output, $returnValue);
+        if ($returnValue < 0) {
             throw new RuntimeException("'grep' is not a valid shell command");
         }
 
