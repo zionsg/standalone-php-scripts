@@ -58,6 +58,8 @@ class Grep
         }
 
         // Collate arguments
+        $recursiveArg = ($recursive ? '-r' : '');
+        
         $excludeArgs = '';
         foreach ($exclude as $file) {
             $excludeArgs .= '--exclude=' . $file . ' ';
@@ -69,7 +71,7 @@ class Grep
         }
 
         // Run shell command
-        $command = "grep -r -n {$excludeArgs} {$includeArgs} --regexp='{$pattern}' . | sort";
+        $command = "grep -n {$recursiveArg} {$excludeArgs} {$includeArgs} --regexp='{$pattern}' . | sort";
         $result = shell_exec($command);
 
         // Process results
