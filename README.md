@@ -1,7 +1,9 @@
 Standalone PHP Scripts
 ======================
 
-**Current scripts**
+In general, files with names in `StudlyCaps` contain classes (OOP) while those in lowercase contain procedural scripts.
+
+**Classes**
 - DirectoryListing<br />
   Retrieve directory listing with folder/file count and size info
 
@@ -16,3 +18,7 @@ Standalone PHP Scripts
 
 - VirtualHosts<br />
   Generate list and config for port-based virtual hosts on local development machine.
+
+**Procedural scripts**
+- phpunit_testsuite_browser<br />
+  Run PHPUnit test suite in browser
