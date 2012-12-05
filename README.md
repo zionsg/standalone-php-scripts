@@ -1,6 +1,8 @@
 Standalone PHP Scripts
 ======================
 
+[![Build Status](https://secure.travis-ci.org/zionsg/standalone-php-scripts.png)](https://travis-ci.org/zionsg/standalone-php-scripts)
+
 In general, folders with names in `StudlyCaps` contain classes (OOP) while those in lowercase contain procedural scripts.
 
 **Classes**
