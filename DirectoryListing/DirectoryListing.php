@@ -207,7 +207,7 @@ class DirectoryListing
                 $info['fileCount']++;
                 $info['totalFileCount']++;
                 $info['totalSize'] += $fileSize;
-            } else if (is_dir($filePath)) { // subfolder
+            } elseif (is_dir($filePath)) { // subfolder
                 if ($filterCallback && !$filterCallback($filePath)) {
                     $info['totalFolderFiltered']++;
                     continue;
