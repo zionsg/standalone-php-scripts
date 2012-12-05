@@ -61,7 +61,7 @@ class Grep
 
         // Collate arguments
         $recursiveArg = ($recursive ? '-r' : '');
-        
+
         $excludeArgs = '';
         foreach ($exclude as $file) {
             $excludeArgs .= '--exclude=' . $file . ' ';
