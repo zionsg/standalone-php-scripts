@@ -1,6 +1,6 @@
 <?php
 /**
- * Runs PHP-CS-Fixer command in browser
+ * Simple script to run PHP-CS-Fixer command in browser
  *
  * Useful if there is no access to commandline, eg. restricted permissions
  * Assuming this file and the files to check are in <webroot>/check, just type this in the browser:
@@ -17,10 +17,12 @@ require_once 'PHP-CS-Fixer/vendor/autoload.php';
 
 use Symfony\CS\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 $application = new Application();
-$input = new StringInput('fix --verbose --dry-run --level=psr2 .');
+$input = new StringInput('fix --verbose --dry-run --level=all .');
+$output = new StreamOutput(fopen('php://output', 'a'), StreamOutput::VERBOSITY_VERBOSE);
 ?>
 <pre>
-<?php $application->run($input); ?>
+<?php $application->run($input, $output); ?>
 </pre>
