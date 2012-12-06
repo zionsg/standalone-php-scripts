@@ -12,7 +12,7 @@
  * @since  2012-12-06T19:00+08:00
  */
 
-// Assumes PHP-CS-Fixer has been installed via Composer and is in include path
+// Assumes PHP-CS-Fixer has been installed via Composer and is in current folder or include path
 require_once 'PHP-CS-Fixer/vendor/autoload.php';
 
 use Symfony\CS\Console\Application;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 $application = new Application();
-$input = new StringInput('fix --verbose --dry-run --level=all .');
+$input = new StringInput('fix --verbose --dry-run .');
 $output = new StreamOutput(fopen('php://output', 'a'), StreamOutput::VERBOSITY_VERBOSE);
 ?>
 <pre>

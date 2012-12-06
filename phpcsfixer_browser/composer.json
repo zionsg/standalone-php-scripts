@@ -1,0 +1,10 @@
+{
+    "name": "php-cs-fixer",
+    "description": "PHP Coding Standards Fixer",
+    "require": {
+        "fabpot/php-cs-fixer": "0.1.*"
+    },
+    "config": {
+        "vendor-dir": "PHP-CS-Fixer/vendor"
+    }
+}
