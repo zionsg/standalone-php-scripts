@@ -1,5 +1,4 @@
-Tokenize Html
-=============
+### Tokenize Html
 
 **Purpose**<br />
 Tokenize HTML content into words and tags

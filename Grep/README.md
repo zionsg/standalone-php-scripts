@@ -1,5 +1,4 @@
-Grep
-====
+### Grep
 
 **Purpose**<br />
 Grep (UNIX command) all files for search text recursively in current directory

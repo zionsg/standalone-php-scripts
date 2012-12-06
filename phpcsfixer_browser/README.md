@@ -1,8 +1,7 @@
-Run PHP-CS-Fixer in Browser
-===========================
+### Run PHP-CS-Fixer in Browser
 
 **Purpose**<br />
-Run PHP-CS-Fixer in browser. This would be useful if there is no access to the commandline, eg. restricted permissions.
+Run PHP-CS-Fixer in browser. This can be used if there is no access to the commandline, eg. restricted permissions.
 
 **Example**<br />
 

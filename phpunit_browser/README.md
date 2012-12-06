@@ -1,9 +1,8 @@
-Run PHPUnit in Browser
-======================
+### Run PHPUnit in Browser
 
 **Purpose**<br />
 Run PHPUnit in browser using `phpunit.xml` for configuration.<br />
-This would be useful if there is no access to the commandline, eg. restricted permissions.
+This can be used if there is no access to the commandline, eg. restricted permissions.
 
 **Example**<br />
 

@@ -1,5 +1,4 @@
-Inline Images
-=============
+### Inline Images
 
 **Purpose**<br />
 Read content from an url and converts images into inline images.

@@ -1,5 +1,4 @@
-Virtual Hosts
-=============
+### Virtual Hosts
 
 **Purpose**<br />
 Generate list and config for port-based virtual hosts on local development machine.

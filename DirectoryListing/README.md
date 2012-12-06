@@ -1,5 +1,4 @@
-Directory Listing
-=================
+### Directory Listing
 
 **Purpose**<br />
 Retrieve directory listing with folder/file count and size info
