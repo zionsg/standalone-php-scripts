@@ -21,7 +21,7 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 
 **Procedural scripts**
 - phpcsfixer_browser<br />
-  Run PHP-CS-Fixer in browser
+  Run PHP-CS-Fixer in browser (checking only, no fixing)
 
 - phpunit_browser<br />
   Run PHPUnit tests in browser
