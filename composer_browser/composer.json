@@ -1,10 +1,10 @@
 {
-    "name": "composer",
-    "description": "Composer",
+    "name": "phpunit",
+    "description": "PHPUnit",
     "require": {
-        "composer/composer": "1.0.*"
+        "phpunit/phpunit": "3.7.*"
     },
     "config": {
-        "vendor-dir": "Composer/vendor"
+        "vendor-dir": "PHPUnit/vendor"
     }
 }
