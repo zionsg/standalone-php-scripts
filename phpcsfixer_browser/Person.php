@@ -5,6 +5,11 @@ class Person
 
     public function __construct($name)
     {
+        if (empty($name))
+        {
+            $name = '';
+        }
+        
         $this->name = $name;
     }
 
