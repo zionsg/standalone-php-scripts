@@ -20,5 +20,5 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
   Generate list and config for port-based virtual hosts on local development machine.
 
 **Procedural scripts**
-- phpunit_testsuite_browser<br />
-  Run PHPUnit test suite in browser
+- phpunit_browser<br />
+  Run PHPUnit tests in browser
