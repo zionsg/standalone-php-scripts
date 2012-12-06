@@ -1,4 +1,4 @@
-### Run PHP-CS-Fixer in Browser
+### Run PHP-CS-Fixer in Browser (checking only, no fixing)
 
 **Purpose**<br />
 Run PHP-CS-Fixer in browser using `.php_cs` for configuration.<br />
