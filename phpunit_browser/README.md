@@ -6,7 +6,7 @@ Run PHPUnit in browser. This would be useful if there is no access to the comman
 
 **Example**<br />
 
-1. Clone this project into your `<webroot>/test`.
+1. Clone this project into your `<webroot>/test`
 2. Type the following in your browser: `http://localhost/test/phpunit_browser.php`
 3. The script will load `PersonTest.php` (which uses `Person.php`)
 4. You should see the following output (or similar) in your browser:
