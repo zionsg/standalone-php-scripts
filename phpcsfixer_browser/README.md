@@ -13,5 +13,5 @@ Run PHP-CS-Fixer in browser. This would be useful if there is no access to the c
 
 ```
 ! Class Person in D:/localhost/www/check/Person.php should have at least a vendor namespace according to PSR-0 rules
-   1) Person.php (braces)
+   1) Person.php (braces, eof_ending)
 ```
