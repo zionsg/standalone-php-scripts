@@ -1,15 +1,16 @@
 ### Run PHPUnit in Browser
 
 **Purpose**<br />
-Run PHPUnit in browser using `phpunit.xml` for configuration.<br />
+Run PHPUnit in browser using `phpunit.xml` or `phpunit.xml.dist` for configuration.<br />
 This can be used if there is no access to the commandline, eg. restricted permissions.
 
 **Example**<br />
 
 1. Clone this project into your `<webroot>/test`
-2. Type the following in your browser: `http://localhost/test/phpunit_browser.php`
-3. The script will read `phpunit.xml` and run `PersonTest.php`
-4. You should see the following output (or similar) in your browser:
+2. Run `composer install` to install `PHPUnit`
+3. Type the following in your browser: `http://localhost/test/phpunit_browser.php`
+4. The script will read `phpunit.xml` and run `testsuite/PersonTest.php`
+5. You should see the following output (or similar) in your browser:
 
 ```
 PHPUnit 3.7.10 by Sebastian Bergmann.
