@@ -12,7 +12,9 @@ Run PHPUnit in browser
 4. You should see the following output (or similar) in your browser:
 
 ```
-  PHPUnit 3.7.10 by Sebastian Bergmann.
+PHPUnit 3.7.10 by Sebastian Bergmann.
+
+Configuration read from D:\localhost\www\test\phpunit.xml
 
 .
 
