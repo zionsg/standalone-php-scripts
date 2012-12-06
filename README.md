@@ -20,6 +20,9 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
   Generate list and config for port-based virtual hosts on local development machine.
 
 **Procedural scripts**
+- composer_browser<br />
+  Run `composer install` in browser
+
 - phpcsfixer_browser<br />
   Run PHP-CS-Fixer in browser (checking only, no fixing)
 

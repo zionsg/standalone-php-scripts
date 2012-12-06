@@ -1,0 +1,10 @@
+{
+    "name": "composer",
+    "description": "Composer",
+    "require": {
+        "composer/composer": "1.0.*"
+    },
+    "config": {
+        "vendor-dir": "Composer/vendor"
+    }
+}
