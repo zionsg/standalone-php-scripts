@@ -1,6 +1,6 @@
 <?php
 /**
- * Runs PHPUnit command in browser using phpunit.xml for configuration
+ * Simple script to run PHPUnit command in browser using phpunit.xml for configuration
  *
  * Useful if there is no access to commandline, eg. restricted permissions
  * Assuming this file and phpunit.xml are in <webroot>/test, just type this in the browser:
