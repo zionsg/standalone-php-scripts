@@ -17,8 +17,8 @@ echo '<pre>' . htmlspecialchars($instance('test.php')) . '</pre>';
 ?>
 ```
 _BECOMES_
-<pre class='xdebug-var-dump' dir='ltr'>
+```
 <?php // test.php ?>
 <?php  $a = 1; ?>
 <?php echo $a;?>
-</pre>
+```
