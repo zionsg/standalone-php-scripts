@@ -84,16 +84,7 @@ function crawlSite($site,
             foreach ($matches[1] as $match) {
                 list($link, $offset) = $match;
 
-                if (preg_match('~^(([^:]+):)?//~', $link, $matches)) { // absolute url
-                    // queue link if it is a downlevel link
-                    if (   stripos($link . '/', $site . '/') !== false
-                        && '?' == substr(pathinfo($link, PATHINFO_FILENAME), 0, 1)
-                    ) {
-                        if (!isset($processed[$link])) {
-                            $queue[$link] = $link;
-                        }
-                    }
-                } else { // relative url
+                if (!preg_match('~^(([^:]+):)?//~', $link)) { // relative url
                     $firstChar = substr($link, 0, 1);
                     $firstTwoChars = substr($link, 0, 2);
 
@@ -103,17 +94,14 @@ function crawlSite($site,
                         $link = $basePath . '/' . $link;
                     } elseif ('.' == $firstChar) {
                         $link = $basePath . substr($link, 1);
-                        if (!isset($processed[$link])) {
-                            $queue[$link] = $link;
-                        }
                     } else {
                         $link = $basePath . '/' . $link; // subfolder under site
-                        if (!isset($processed[$link])) {
-                            $queue[$link] = $link;
-                        }
                     }
                 }
 
+                if (!isset($processed[$link])) {
+                    $queue[$link] = $link;
+                }
                 $links[$url][] = $link;
             }
         }
