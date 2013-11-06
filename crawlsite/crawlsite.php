@@ -1,0 +1,105 @@
+<?php
+/**
+ * Script to crawl website
+ *
+ * Replace $site with your own url and run the script.
+ * Only downlevel links are traversed.
+ *
+ * @author Zion Ng <zion@intzone.com>
+ * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/crawlsite
+ * @since  2012-12-07T00:40+08:00
+ */
+
+$site = 'http://example.com/test';
+
+set_time_limit(0);
+$links = crawlSite($site);
+
+echo '<pre>';
+echo 'Site: ' . $site . "\n\n";
+print_r($links);
+echo '</pre>';
+
+/**
+ * Crawl site for links
+ *
+ * @param  string $site
+ * @param  array  $pageExtensions
+ * @param  array  $attributes
+ * @return array  array('webpage' => array(link1, link2, ...))
+ */
+function crawlSite($site,
+                   $pageExtensions = array('htm', 'html', 'php', 'phtml'),
+                   $attributes = array('href', 'src')
+) {
+    $site = rtrim($site, "\\/");
+    $siteParts = parse_url($site);
+    $domain = $siteParts['scheme'] . '://' . $siteParts['host'];
+
+    $queue = array($site);
+    $links = array();
+    while (!empty($queue)) {
+        $url = array_shift($queue);
+        $basePath = $url;
+
+        // Only process downlevel links
+        // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
+        // and to ensure http://example.com will match http://example.com (hence appended to $url also)
+        if (stripos($url . '/', $site . '/') === false) {
+            continue;
+        }
+
+        // Skip urls with # in them else infinite loop
+        if (stripos($url, '#') !== false) {
+            continue;
+        }
+
+        // Only process contents of webpages
+        $extension = pathinfo($url, PATHINFO_EXTENSION);
+        if ($extension && !in_array($extension, $pageExtensions)) {
+            continue;
+        }
+        if ($extension) {
+            $basePath = pathinfo($url, PATHINFO_DIRNAME);
+        }
+
+        // Get contents of webpage
+        $contents = file_get_contents($url);
+        if ($contents === false) {
+            continue;
+        }
+
+        foreach ($attributes as $attrib) {
+            $matches = array();
+            if (!preg_match_all('~' . $attrib . '="([^"]+)"~', $contents, $matches, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+
+            foreach ($matches[1] as $match) {
+                list($link, $offset) = $match;
+
+                if (preg_match('~^(([^:]+):)?//~', $link, $matches)) { // external url
+                    $links[$url][] = $link;
+                } else { // internal url
+                    $firstChar = substr($link, 0, 1);
+                    $firstTwoChars = substr($link, 0, 2);
+
+                    if ('/' == $firstChar) {
+                        $link = $domain . $link;
+                    } elseif ('..' == $firstTwoChars) {
+                        $link = $basePath . '/' . $link;
+                    } elseif ('.' == $firstChar) {
+                        $link = $basePath . substr($link, 1);
+                        $queue[] = $link;
+                    } else {
+                        $link = $basePath . '/' . $link; // subfolder under site
+                        $queue[] = $link;
+                    }
+                    $links[$url][] = $link;
+                }
+            }
+        }
+    }
+
+    return $links;
+}
