@@ -7,18 +7,21 @@
  *
  * @author Zion Ng <zion@intzone.com>
  * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/crawlsite
- * @since  2012-12-07T00:40+08:00
+ * @since  2013-11-06T19:00+08:00
  */
 
 $site = 'http://example.com/test';
 
 set_time_limit(0);
+$start = microtime(true);
 $links = crawlSite($site);
 
-echo '<pre>';
-echo 'Site: ' . $site . "\n\n";
-print_r($links);
-echo '</pre>';
+printf(
+    "<pre>Site: %s\nTime taken: %s seconds\n\n%s\n</pre>",
+    $site,
+    (microtime(true) - $start),
+    print_r($links, true)
+);
 
 /**
  * Crawl site for links
@@ -64,7 +67,7 @@ function crawlSite($site,
         }
 
         // Get contents of webpage
-        $contents = file_get_contents($url);
+        $contents = getUrlContents($url);
         if ($contents === false) {
             continue;
         }
@@ -102,4 +105,32 @@ function crawlSite($site,
     }
 
     return $links;
+}
+
+/**
+ * Download content using CURL - file_get_contents() will not work if "allow_url_fopen" is set to false
+ *
+ * @param  string      $url
+ * @return string|bool Returns false if CURL library not installed
+ */
+function getUrlContents($url)
+{
+    if (!function_exists('curl_init')) {
+        return false;
+    }
+
+    $curlHandler = curl_init(); // initialize a new curl resource
+    $options = array(
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_URL => $url, // set the url to post to
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_RETURNTRANSFER => true, // return value instead of output to browser
+        CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'],
+        CURLOPT_SSL_VERIFYPEER => false,
+    );
+    curl_setopt_array($curlHandler, $options);
+    $output = curl_exec($curlHandler);  // get content
+    curl_close($curlHandler);
+
+    return $output;
 }
