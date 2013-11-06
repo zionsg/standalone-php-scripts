@@ -17,9 +17,10 @@ $start = microtime(true);
 $links = crawlSite($site);
 
 printf(
-    "<pre>Site: %s\nTime taken: %s seconds\n\n%s\n</pre>",
+    "<pre>Site: %s\nTime taken: %s seconds\nLinks crawled: %s\n\n%s\n</pre>",
     $site,
     (microtime(true) - $start),
+    count($links),
     print_r($links, true)
 );
 
@@ -39,10 +40,12 @@ function crawlSite($site,
     $siteParts = parse_url($site);
     $domain = $siteParts['scheme'] . '://' . $siteParts['host'];
 
-    $queue = array($site);
+    $queue = array($site => $site); // $site is used as key to prevent duplicates
+    $processed = array(); // keep tracked of processed links
     $links = array();
     while (!empty($queue)) {
         $url = array_shift($queue);
+        $processed[$url] = true;
         $basePath = $url;
 
         // Only process downlevel links
@@ -59,10 +62,10 @@ function crawlSite($site,
 
         // Only process contents of webpages
         $extension = pathinfo($url, PATHINFO_EXTENSION);
-        if ($extension && !in_array($extension, $pageExtensions)) {
-            continue;
-        }
         if ($extension) {
+            if (!in_array($extension, $pageExtensions)) {
+                continue;
+            }
             $basePath = pathinfo($url, PATHINFO_DIRNAME);
         }
 
@@ -81,9 +84,16 @@ function crawlSite($site,
             foreach ($matches[1] as $match) {
                 list($link, $offset) = $match;
 
-                if (preg_match('~^(([^:]+):)?//~', $link, $matches)) { // external url
-                    $links[$url][] = $link;
-                } else { // internal url
+                if (preg_match('~^(([^:]+):)?//~', $link, $matches)) { // absolute url
+                    // queue link if it is a downlevel link
+                    if (   stripos($link . '/', $site . '/') !== false
+                        && '?' == substr(pathinfo($link, PATHINFO_FILENAME), 0, 1)
+                    ) {
+                        if (!isset($processed[$link])) {
+                            $queue[$link] = $link;
+                        }
+                    }
+                } else { // relative url
                     $firstChar = substr($link, 0, 1);
                     $firstTwoChars = substr($link, 0, 2);
 
@@ -93,13 +103,18 @@ function crawlSite($site,
                         $link = $basePath . '/' . $link;
                     } elseif ('.' == $firstChar) {
                         $link = $basePath . substr($link, 1);
-                        $queue[] = $link;
+                        if (!isset($processed[$link])) {
+                            $queue[$link] = $link;
+                        }
                     } else {
                         $link = $basePath . '/' . $link; // subfolder under site
-                        $queue[] = $link;
+                        if (!isset($processed[$link])) {
+                            $queue[$link] = $link;
+                        }
                     }
-                    $links[$url][] = $link;
                 }
+
+                $links[$url][] = $link;
             }
         }
     }
