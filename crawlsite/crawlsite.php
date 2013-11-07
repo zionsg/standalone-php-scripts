@@ -33,6 +33,7 @@ printf(
  */
 function crawlSite($site, $pageExtensions = array('htm', 'html', 'php', 'phtml'))
 {
+    // Types of links - header() and meta refresh tags need to be processed else may stop at index page
     $pattern = '~'
              . 'header\s*\([\'"]Location:\s*([^\'"]+)[\'"]\);'
              . '|meta.+refresh.+content=\s*[\'"].*url=([^\'"]+)[\'"]'
