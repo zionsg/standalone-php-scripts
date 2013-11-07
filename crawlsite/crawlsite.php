@@ -10,7 +10,7 @@
  * @since  2013-11-06T19:00+08:00
  */
 
-$site = 'http://example.com/test';
+$site = 'http://www.worldgourmetsummit.com/wgs2011';
 
 set_time_limit(0);
 $start = microtime(true);
@@ -28,15 +28,19 @@ printf(
  * Crawl site for links
  *
  * @param  string $site
- * @param  array  $pageExtensions
- * @param  array  $attributes
+ * @param  array  $pageExtensions Files with no extension or extension found in array will be crawled
  * @return array  array('webpage' => array(link1, link2, ...))
  */
-function crawlSite($site,
-                   $pageExtensions = array('htm', 'html', 'php', 'phtml'),
-                   $attributes = array('href', 'src')
-) {
-    $site = rtrim($site, "\\/");
+function crawlSite($site, $pageExtensions = array('htm', 'html', 'php', 'phtml'))
+{
+    $pattern = '~'
+             . 'header\s*\([\'"]Location:\s*([^\'"]+)[\'"]\);'
+             . '|meta.+refresh.+content=\s*[\'"].*url=([^\'"]+)[\'"]'
+             . '|href=[\'"]([^\'"]+)[\'"]'
+             . '|src=[\'"]([^\'"]+)[\'"]'
+             . '~i';
+
+    $site = rtrim(trim($site), "\\/");
     $siteParts = parse_url($site);
     $domain = $siteParts['scheme'] . '://' . $siteParts['host'];
 
@@ -61,7 +65,8 @@ function crawlSite($site,
         }
 
         // Only process contents of webpages
-        $extension = pathinfo($url, PATHINFO_EXTENSION);
+        // parse_url() is used else "http://example.com/test.php?id=2" will not match
+        $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
         if ($extension) {
             if (!in_array($extension, $pageExtensions)) {
                 continue;
@@ -75,13 +80,18 @@ function crawlSite($site,
             continue;
         }
 
-        foreach ($attributes as $attrib) {
-            $matches = array();
-            if (!preg_match_all('~' . $attrib . '="([^"]+)"~', $contents, $matches, PREG_OFFSET_CAPTURE)) {
-                continue;
-            }
+        // Find links
+        $matches = array();
+        if (!preg_match_all($pattern, $contents, $matches, PREG_OFFSET_CAPTURE)) {
+            continue;
+        }
 
-            foreach ($matches[1] as $match) {
+        $matchCnt = count($matches);
+        for ($i = 1; $i < $matchCnt; $i++) {
+            foreach ($matches[$i] as $match) {
+                if (!is_array($match) || !$match[0]) {
+                    continue;
+                }
                 list($link, $offset) = $match;
 
                 if (!preg_match('~^(([^:]+):)?//~', $link)) { // relative url
@@ -105,7 +115,7 @@ function crawlSite($site,
                 $links[$url][] = $link;
             }
         }
-    }
+    } // end while
 
     return $links;
 }
