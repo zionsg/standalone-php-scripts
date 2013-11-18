@@ -2,6 +2,9 @@
 
 **Purpose**<br />
 Crawl site for links using downwards traversal only.
+
+**Notes**<br />
+For each webpage crawled, a local copy with renamed links will be saved.<br />
 This uses the url_to_absolute() function from http://nadeausoftware.com/articles/2008/05/php_tip_how_convert_relative_url_absolute_url.
 
 **Example**
