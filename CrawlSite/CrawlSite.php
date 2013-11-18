@@ -197,19 +197,30 @@ class CrawlSite
      * Renames url with query string to filesystem friendly url
      *
      * @example http://example.com/test => http://example.com/test/index.php
+     * @example http://example.com/stylesheet.css => http://example.com/stylesheet.css
      * @example http://example.com/test.php?id=1&category=2 => http://example.com/test.php-id-1-category-2.php
      *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
-     *          not renamed to http://example.com/test.php/id/1/category/2/index.php
+     *          not renamed to http://example.com/test.php/id/1/category/2/index.php.
+     *          New file must stay in same folder as old file to ensure relative images/scripts/stylsheets will work.
      * @param   string $url
      * @return  string
      */
     protected function renameUrl($url)
     {
-        $newUrl = str_replace(array('?', '%3F', '=', '%3D'), '-', rtrim(trim($url), "\\/"));
-        $extension = pathinfo(parse_url($newUrl, PHP_URL_PATH), PATHINFO_EXTENSION);
-        if (!$extension || !in_array($extension, $this->pageExtensions)) {
-            $newUrl .= '/index.' . $this->defaultExtension;
+        // For non-webpages such as .css, .js, .jpg
+        $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+        if ($extension && !in_array($extension, $this->pageExtensions)) {
+            return $url;
         }
+
+        // For webpages
+        $newUrl = str_replace(array('?', '%3F', '=', '%3D'), '-', rtrim(trim($url), "\\/"));
+        if ($extension) {
+            $newUrl .= '.' . $extension;
+        } else {
+           $newUrl .= '/index.' . $this->defaultExtension;
+        }
+
         return $newUrl;
     }
 }
