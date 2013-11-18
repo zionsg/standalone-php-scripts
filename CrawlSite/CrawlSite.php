@@ -1,24 +1,39 @@
 <?php
 /**
- * Script to crawl website for links using downwards traversal only
+ * Crawl website for links using downwards traversal only
+ *
+ * For each webpage crawled, a local copy with renamed links will be saved.
  *
  * Usage:
  *     $crawler = new CrawlSite();
- *     $links = $crawler('http://example.com/test');
+ *     $links = $crawler('http://example.com/test/');
  *     echo '<pre>' . print_r($links, true) . '</pre>';
  *
+ * @see     http://nadeausoftware.com/articles/2008/05/php_tip_how_convert_relative_url_absolute_url for url_to_absolute
  * @author  Zion Ng <zion@intzone.com>
  * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite
  * @since   2013-11-06T19:00+08:00
  */
+
+include 'UrlToAbsolute/url_to_absolute.php';
+
 class CrawlSite
 {
     /**
      * Web page extensions
      *
+     * Webpages with these extensions will be crawled and saved locally.
+     *
      * @var array
      */
     protected $pageExtensions = array('htm', 'html', 'php', 'phtml');
+
+    /**
+     * Default extension for local copy of webpage
+     *
+     * @var string
+     */
+    protected $defaultExtension = 'php';
 
     /**
      * CURL Handler
@@ -61,6 +76,8 @@ class CrawlSite
     /**
      * Crawl site for links using downwards traversal only
      *
+     * For each webpage crawled, a local copy with renamed links will be saved.
+     *
      * @param  string $site
      * @return array  array('webpage' => array(link1, link2, ...))
      */
@@ -74,22 +91,27 @@ class CrawlSite
                  . '|src=[\'"]([^\'"]+)[\'"]'
                  . '~i';
 
-        $site = rtrim(trim($site), "\\/");
-        $siteParts = parse_url($site);
-        $domain = $siteParts['scheme'] . '://' . $siteParts['host'];
+        // Get path to directory when $site resides in - for determining downward links
+        // parse_url() used else http://example.com will give ".com" extension
+        if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) {
+            $siteDir = pathinfo($site, PATHINFO_DIRNAME) . '/';
+        } else {
+            $site = rtrim($site, "\\/") . '/';
+            $siteDir = $site;
+        }
 
+        clearstatcache();
         $queue = array($site => $site); // $site is used as key to prevent duplicates
         $processed = array(); // keep tracked of processed links
         $links = array();
         while (!empty($queue)) {
             $url = array_shift($queue);
             $processed[$url] = true;
-            $basePath = $url;
 
             // Only process downward links
             // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
-            // and to ensure http://example.com will match http://example.com (hence appended to $url also)
-            if (stripos($url . '/', $site . '/') === false) {
+            // and to ensure http://example.com will match http://example.com/
+            if (stripos($url . '/', $siteDir) === false) {
                 continue;
             }
 
@@ -101,11 +123,8 @@ class CrawlSite
             // Only process contents of webpages
             // parse_url() is used else "http://example.com/test.php?id=2" will not match
             $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
-            if ($extension) {
-                if (!in_array($extension, $this->pageExtensions)) {
-                    continue;
-                }
-                $basePath = pathinfo($url, PATHINFO_DIRNAME);
+            if ($extension && !in_array($extension, $this->pageExtensions)) {
+                continue;
             }
 
             // Get contents of webpage using CURL
@@ -121,41 +140,76 @@ class CrawlSite
                 continue;
             }
 
+            // Filter out empty matches and order according to offset
+            $orderedMatches = array();
             $matchCnt = count($matches);
             for ($i = 1; $i < $matchCnt; $i++) {
                 foreach ($matches[$i] as $match) {
                     if (!is_array($match) || !$match[0]) {
                         continue;
                     }
-                    list($link, $offset) = $match;
-
-                    if (!preg_match('~^(([^:]+):)?//~', $link)) { // relative url
-                        if ('javascript:' == substr($link, 0, 11)) { // do not process javascript calls
-                            continue;
-                        }
-
-                        $firstChar = substr($link, 0, 1);
-                        $firstTwoChars = substr($link, 0, 2);
-
-                        if ('/' == $firstChar) {
-                            $link = $domain . $link;
-                        } elseif ('..' == $firstTwoChars) {
-                            $link = $basePath . '/' . $link;
-                        } elseif ('.' == $firstChar) {
-                            $link = $basePath . substr($link, 1);
-                        } else {
-                            $link = $basePath . '/' . $link; // subfolder under site
-                        }
-                    }
-
-                    if (!isset($processed[$link])) {
-                        $queue[$link] = $link;
-                    }
-                    $links[$url][] = $link;
+                    $orderedMatches[$match[1]] = $match[0];
                 }
             }
+            ksort($orderedMatches);
+
+            // Find and rename downward links in page contents
+            $prevOffset = 0;
+            $newContents = '';
+            foreach ($orderedMatches as $offset => $link) {
+                $absoluteLink = str_replace(array('%3F', '%3D'), array('?', '='), url_to_absolute($url, $link));
+                $linkLen = strlen($link);
+
+                if (stripos($absoluteLink, $siteDir) !== false) {
+                    $renamedLink  = $this->renameUrl($absoluteLink);
+                } else {
+                    $renamedLink = $absoluteLink;
+                }
+                $newContents .= substr($contents, $prevOffset, $offset - $prevOffset) . $renamedLink;
+                $prevOffset   = $offset + $linkLen;
+
+                if (!isset($processed[$absoluteLink])) {
+                    $queue[$absoluteLink] = $absoluteLink;
+                }
+                $links[$url][] = $absoluteLink;
+            }
+
+            // Save local copy - error may occur if directory nesting is too deep or if path is too long
+            $newContents .= substr($contents, $prevOffset);
+            $renamedUrl   = $this->renameUrl($url);
+            $filename     = preg_replace(
+                '~^(.*:[\\/]+)~',
+                str_replace("\\", '/', getcwd()) . '/',
+                $renamedUrl
+            );
+            $dir = dirname($filename);
+            if (!file_exists($dir)) {
+                mkdir($dir, 0777, true);
+            }
+            file_put_contents($filename, $newContents);
+
         } // end while
 
         return $links;
     } // end function __invoke
+
+    /**
+     * Renames url with query string to filesystem friendly url
+     *
+     * @example http://example.com/test => http://example.com/test/index.php
+     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test.php-id-1-category-2.php
+     *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
+     *          not renamed to http://example.com/test.php/id/1/category/2/index.php
+     * @param   string $url
+     * @return  string
+     */
+    protected function renameUrl($url)
+    {
+        $newUrl = str_replace(array('?', '%3F', '=', '%3D'), '-', rtrim(trim($url), "\\/"));
+        $extension = pathinfo(parse_url($newUrl, PHP_URL_PATH), PATHINFO_EXTENSION);
+        if (!$extension || !in_array($extension, $this->pageExtensions)) {
+            $newUrl .= '/index.' . $this->defaultExtension;
+        }
+        return $newUrl;
+    }
 }
