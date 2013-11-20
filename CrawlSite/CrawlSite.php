@@ -157,7 +157,13 @@ class CrawlSite
             $prevOffset = 0;
             $newContents = '';
             foreach ($orderedMatches as $offset => $link) {
-                $absoluteLink = str_replace(array('%3F', '%3D'), array('?', '='), url_to_absolute($url, $link));
+                // url_to_absolute does not handle files with spaces in their names, hence replace with %20
+                // $link not modified as it will affect the position offsets
+                $absoluteLink = str_replace(
+                    array('%3F', '%3D'),
+                    array('?', '='),
+                    url_to_absolute($url, str_replace(' ', '%20', $link))
+                );
                 $linkLen = strlen($link);
 
                 if (stripos($absoluteLink, $siteDir) !== false) {
@@ -201,7 +207,7 @@ class CrawlSite
      * @example http://example.com/test.php?id=1&category=2 => http://example.com/test.php-id-1-category-2.php
      *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
      *          not renamed to http://example.com/test.php/id/1/category/2/index.php.
-     *          New file must stay in same folder as old file to ensure relative images/scripts/stylsheets will work.
+     *          New file must stay in same folder as old file to ensure relative images/scripts/stylesheets will work.
      * @param   string $url
      * @return  string
      */
@@ -216,7 +222,10 @@ class CrawlSite
         // For webpages
         $newUrl = str_replace(array('?', '%3F', '=', '%3D'), '-', rtrim(trim($url), "\\/"));
         if ($extension) {
-            $newUrl .= '.' . $extension;
+            // Check double extension when there is no query params or fragment, eg. http://example.com/test.php.php
+            if (substr($newUrl, -(1 + strlen($extension))) != '.' . $extension) {
+                $newUrl .= '.' . $extension;
+            }
         } else {
            $newUrl .= '/index.' . $this->defaultExtension;
         }
