@@ -187,12 +187,14 @@ class CrawlSite
             }
 
             // Save local copy - error may occur if directory nesting is too deep or if path is too long
+            // Unlike urls, %20 and spaces not the same for files, hence %20 must be converted back to spaces
             $renamedUrl = $this->renameUrl($url);
             $filename   = preg_replace(
                 '~^(.*:[\\/]+)~',
                 str_replace("\\", '/', getcwd()) . '/',
                 $renamedUrl
             );
+            $filename = str_replace('%20', ' ', $filename);
             $dir = dirname($filename);
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
@@ -247,11 +249,38 @@ class CrawlSite
     }
 
     /**
+     * Build url from parse_url() return values
+     *
+     * Basic alternative to http_build_url() which requires PECL extension.
+     * Generic syntax from RFC 3986 — STD 66, chapter 3:
+     *   scheme://username:password@domain:port/path?query_string#fragment_id
+     *
+     * @see    http://www.php.net/manual/en/function.parse-url.php#106731 for source
+     * @param  array $parts Url components as per return values for parse_url()
+     * @return string
+     */
+    protected function buildUrl(array $parts)
+    {
+        $scheme   = isset($parts['scheme'])
+                  ? $parts['scheme'] . ':' . (('mailto' == strtolower($parts['scheme'])) ? '' : '//')
+                  : '';
+        $host     = isset($parts['host']) ? $parts['host'] : '';
+        $port     = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $user     = isset($parts['user']) ? $parts['user'] : '';
+        $pass     = isset($parts['pass']) ? ':' . $parts['pass']  : '';
+        $pass     = ($user || $pass) ? "$pass@" : '';
+        $path     = isset($parts['path']) ? $parts['path'] : '';
+        $query    = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+        return "$scheme$user$pass$host$port$path$query$fragment";
+    }
+
+    /**
      * Renames url with query string to filesystem friendly url
      *
      * @example http://example.com/test => http://example.com/test/index.php
      * @example http://example.com/stylesheet.css => http://example.com/stylesheet.css
-     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test.php-id-1-category-2.php
+     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test-id=1&category=2.php
      *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
      *          not renamed to http://example.com/test.php/id/1/category/2/index.php.
      *          New file must stay in same folder as old file to ensure relative images/scripts/stylesheets will work.
@@ -260,23 +289,26 @@ class CrawlSite
      */
     protected function renameUrl($url)
     {
+        $parts = parse_url($url);
+        $extension = pathinfo($parts['path'], PATHINFO_EXTENSION);
+
         // For non-webpages such as .css, .js, .jpg
-        $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
         if ($extension && !in_array($extension, $this->pageExtensions)) {
             return $url;
         }
 
-        // For webpages
-        $newUrl = str_replace(array('?', '%3F', '=', '%3D'), '-', rtrim(trim($url), "\\/"));
-        if ($extension) {
-            // Check double extension when there is no query params or fragment, eg. http://example.com/test.php.php
-            if (substr($newUrl, -(1 + strlen($extension))) != '.' . $extension) {
-                $newUrl .= '.' . $extension;
-            }
-        } else {
-           $newUrl .= '/index.' . $this->defaultExtension;
+        // If no extension, eg. http://example.com/test or http:://example.com/test/?id=5, default to index.php
+        if (!$extension) {
+            $extension = $this->defaultExtension;
+            $parts['path'] = rtrim($parts['path'], "\\/") . "/index.{$extension}";
         }
 
-        return $newUrl;
+        if (isset($parts['query'])) {
+            $parts['query'] = str_replace(array('=', '&'), array('-', '_'), $parts['query']);
+            $parts['path'] = substr($parts['path'], 0, -(1 + strlen($extension))) . "_{$parts['query']}.{$extension}";
+            unset($parts['query']);
+        }
+
+        return $this->buildUrl($parts);
     }
 }
