@@ -227,11 +227,7 @@ class CrawlSite
             $renamedLink = $link;
         } else { // Webpages
             // url_to_absolute cannot handle spaces in paths, hence replacing with %20
-            $link = str_replace(
-                array('%3F', '%3D'),
-                array('?', '='),
-                url_to_absolute($baseUrl, str_replace(' ', '%20', $link))
-            );
+            $link = rawurldecode(url_to_absolute($baseUrl, str_replace(' ', '%20', $link)));
 
             if (stripos($link, $this->siteDir) !== false) {
                 $renamedLink  = $this->renameUrl($link);
@@ -280,7 +276,7 @@ class CrawlSite
      *
      * @example http://example.com/test => http://example.com/test/index.php
      * @example http://example.com/stylesheet.css => http://example.com/stylesheet.css
-     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test-id=1&category=2.php
+     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test_id-1_category22.php
      *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
      *          not renamed to http://example.com/test.php/id/1/category/2/index.php.
      *          New file must stay in same folder as old file to ensure relative images/scripts/stylesheets will work.
