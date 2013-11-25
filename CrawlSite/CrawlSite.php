@@ -180,10 +180,12 @@ class CrawlSite
                 $element->setAttribute('content', $matches[1] . $link);
             }
 
-            // <a> tags
-            foreach ($dom->getElementsByTagName('a') as $element) {
-                $link = $this->processLink($element->getAttribute('href'), $url);
-                $element->setAttribute('href', $link);
+            // <a> and <area> tags whose href attributes usually point to webpages. <base> and <link> excluded
+            foreach (array('a', 'area') as $tag) {
+                foreach ($dom->getElementsByTagName($tag) as $element) {
+                    $link = $this->processLink($element->getAttribute('href'), $url);
+                    $element->setAttribute('href', $link);
+                }
             }
 
             // Save local copy - error may occur if directory nesting is too deep or if path is too long
