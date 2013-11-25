@@ -2,7 +2,8 @@
 /**
  * Crawl website using downwards traversal only
  *
- * For each webpage crawled, a local copy with renamed links to webpages will be saved.
+ * This can be used to convert a dynamic PHP site to a static site as local copies of
+ * webpages are saved with dynamic links changed to static ones, eg: test.php?id=3 => test_id-3.php
  *
  * Usage:
  *     $crawler = new CrawlSite();
@@ -110,7 +111,7 @@ class CrawlSite
      * For each webpage crawled, a local copy with renamed links to webpages will be saved.
      * The renamed links will be converted to absolute links for easy naming of local copies.
      *
-     * Only meta refresh links and <a> href links are crawled.
+     * Only links in <meta> refresh tags, <a> tags and <area> tags are crawled.
      *
      * @param  string $site
      * @return array  array('webpage' => array(link1, link2, ...))
@@ -278,7 +279,7 @@ class CrawlSite
      *
      * @example http://example.com/test => http://example.com/test/index.php
      * @example http://example.com/stylesheet.css => http://example.com/stylesheet.css
-     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test_id-1_category22.php
+     * @example http://example.com/test.php?id=1&category=2 => http://example.com/test_id-1_category-2.php
      *          If the file test.php exists, Windows does not allow the creation of a folder named "test.php", hence
      *          not renamed to http://example.com/test.php/id/1/category/2/index.php.
      *          New file must stay in same folder as old file to ensure relative images/scripts/stylesheets will work.
