@@ -30,7 +30,7 @@ class CrawlSite
      *
      * @var array
      */
-    protected $pageExtensions = array('htm', 'html', 'php', 'phtml');
+    protected $pageExtensions = array('htm', 'html', 'php');
 
     /**
      * Default extension for local copy of webpage
@@ -38,6 +38,29 @@ class CrawlSite
      * @var string
      */
     protected $defaultExtension = 'php';
+
+    /**
+     * Link types to check (tag, attribute, pattern)
+     *
+     * Default link types are <a> and <area> tags whose href attributes usually point to webpages.
+     * <base> and <link> are excluded.
+     *
+     * The pattern, if not empty, is used as a regular expression to extract the actual link
+     * from the attribute, eg: <a onclick="ajaxLoad('get.php?page=content');">load content</a>.
+     * The pattern must have exactly 3 groups to facilitate search and replace: prefix, link, suffix,
+     * eg: ~(ajaxLoad\(')([^']+)('\);)~i
+     *
+     * @example <htmlTag1> => array(<tagAttribute1> => array(<attributePattern1>, <attributePattern2>))
+     * @var     array
+     */
+    protected $linkTypes = array(
+        'a' => array(
+            'href' => array(''), // '' as a pattern will take the entire value of the attribute and skip preg_match()
+        ),
+        'area' => array(
+            'href' => array(''),
+        ),
+    );
 
     /**
      * Path to directory where site resides in - for determining downward links
@@ -111,7 +134,7 @@ class CrawlSite
      * For each webpage crawled, a local copy with renamed links to webpages will be saved.
      * The renamed links will be converted to absolute links for easy naming of local copies.
      *
-     * Only links in <meta> refresh tags, <a> tags and <area> tags are crawled.
+     * Links in <meta> refresh tags are checked as well in addition to $linksToCheck.
      *
      * @param  string $site
      * @return array  array('webpage' => array(link1, link2, ...))
@@ -181,11 +204,30 @@ class CrawlSite
                 $element->setAttribute('content', $matches[1] . $link);
             }
 
-            // <a> and <area> tags whose href attributes usually point to webpages. <base> and <link> excluded
-            foreach (array('a', 'area') as $tag) {
-                foreach ($dom->getElementsByTagName($tag) as $element) {
-                    $link = $this->processLink($element->getAttribute('href'), $url);
-                    $element->setAttribute('href', $link);
+            // Link types to check
+            foreach ($this->linkTypes as $linkTag => $linkAttributes) {
+                foreach ($dom->getElementsByTagName($linkTag) as $element) {
+                    foreach ($linkAttributes as $linkAttrib => $linkPatterns) {
+                        $value = $element->getAttribute($linkAttrib);
+                        foreach ($linkPatterns as $linkPattern) {
+                            if (!$linkPattern) {
+                                $link = $this->processLink($value, $url);
+                                $element->setAttribute($linkAttrib, $link);
+                            } else {
+                                $matches = array();
+                                // Pattern has 3 groups: '~(prefix)(link)(suffix)~'
+                                if (!preg_match($linkPattern, $value, $matches)) {
+                                    continue;
+                                }
+                                $link = $this->processLink($matches[2], $url);
+                                $element->setAttribute($linkAttrib, preg_replace(
+                                    $linkPattern,
+                                    '\1' . $link . '\3',
+                                    $value
+                                ));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -208,6 +250,30 @@ class CrawlSite
 
         return $this->links;
     } // end function __invoke
+
+    /**
+     * Add link type to check
+     *
+     * @example @see $linkTypes
+     * @param   string $tag
+     * @param   string $attribute
+     * @param   string $pattern   Optional regex pattern
+     * @return  void
+     */
+    public function addLinkType($tag, $attribute, $pattern = '')
+    {
+        $this->linkTypes[$tag][$attribute][] = $pattern;
+    }
+
+    /**
+     * Get link types that will be checked
+     *
+     * @return array
+     */
+    public function getLinkTypes()
+    {
+        return $this->linkTypes;
+    }
 
     /**
      * Process link including queueing and renaming it
