@@ -187,6 +187,15 @@ class CrawlSite
             if ($contents === false) {
                 continue;
             }
+            // Replace contents with meta tag if last effective url of webpage is not a downward link
+            $effectiveUrl = curl_getinfo($this->curlHandler, CURLINFO_EFFECTIVE_URL);
+            if (stripos($effectiveUrl . '/', $this->siteDir) === false) {
+                $contents = sprintf(
+                    '<meta http-equiv="refresh" content="0;url=%s">',
+                    $effectiveUrl
+                );
+                $this->processed[$effectiveUrl] = true; // mark as processed
+            }
 
             // Parse HTML - @ suppresses any warnings that loadHTML might throw because of invalid HTML in the page
             @$dom->loadHTML($contents);
