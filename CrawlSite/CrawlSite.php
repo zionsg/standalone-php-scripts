@@ -42,7 +42,7 @@ class CrawlSite
     /**
      * Link types to check (tag, attribute, pattern)
      *
-     * Default link types are <a> and <area> tags whose href attributes usually point to webpages.
+     * Default link types are <a>, <area> & <iframe> tags whose href/src attributes usually point to webpages.
      * <base> and <link> are excluded.
      *
      * The pattern, if not empty, is used as a regular expression to extract the actual link
@@ -59,6 +59,9 @@ class CrawlSite
         ),
         'area' => array(
             'href' => array(''),
+        ),
+        'iframe' => array(
+            'src' => array(''),
         ),
     );
 
