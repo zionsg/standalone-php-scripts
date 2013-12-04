@@ -235,7 +235,7 @@ class CrawlSite
             // Unlike urls, %20 and spaces not the same for files, hence %20 must be converted back to spaces
             $renamedUrl = $this->renameUrl($url);
             $filename   = preg_replace(
-                '~^(.*:[\\/]+)~',
+                '~^(.*:[\\/]{2})~',
                 str_replace("\\", '/', getcwd()) . '/',
                 $renamedUrl
             );
