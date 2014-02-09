@@ -45,6 +45,13 @@ class TextToCalendar
     protected $sheet;
 
     /**
+     * Default column width - can be changed by config in text
+     *
+     * @var int
+     */
+    protected $defaultColumnWidth = 10;
+
+    /**
      * Current column
      *
      * In PHPExcel, A = 0.
@@ -186,10 +193,11 @@ class TextToCalendar
             'Interval'   => 30, // minutes
             'Font Name'  => 'Calibri',
             'Font Size'  => 11,
+            'Column Width' => 10, // default column width for event columns
         ),
 
         // Color constants. Format - <Name>: <RGB color code>
-        // @see $constants for defined color constants
+        // @see $constants for default colors
         'Colors' => array(),
 
         // A day consists of many events and may span more than 1 column
@@ -381,7 +389,7 @@ class TextToCalendar
 
         $fontSize = $this->sheet->getStyleByColumnAndRow($startCol, $startRow)->getFont()->getSize();
         $colWidth = max(
-            10,
+            $this->defaultColumnWidth,
             $this->sheet->getColumnDimensionByColumn($startCol)->getWidth() // may be -1 due to autosize
         );
         $text = $this->sheet->getCellByColumnAndRow($startCol, $startRow)->getValue();
@@ -480,6 +488,7 @@ class TextToCalendar
             $row++;
         } while ($startTime < $endTime);
 
+        $this->defaultColumnWidth = $details['Column Width']; // default column width
         $this->currCol++; // Increment current column
     } // end function addConfig
 
@@ -666,6 +675,9 @@ class TextToCalendar
             }
             $text .= str_replace($this->newline, "\n", $value) . "\n";
         }
+
+        // Set column width first as it will affect the estimated row height
+        $this->sheet->getColumnDimensionByColumn($eventCol)->setWidth($this->defaultColumnWidth);
 
         // Set text, merge rows for event and set estimated height
         $this->sheet
