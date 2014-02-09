@@ -5,13 +5,16 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 
 **Classes**
 - DirectoryListing<br />
-  Retrieve directory listing with folder/file count and size info
+  Retrieve directory listing with folder/file count and size info.
 
 - Grep<br />
-  Grep (UNIX command) all files for search text recursively in current directory
+  Grep (UNIX command) all files for search text recursively in current directory.
 
 - InlineImages<br />
   Get url content and replace images with inline images.
+
+- TextToCalendar<br />
+  Generate Excel calendar from formatted text using PHPExcel library (http://phpexcel.codeplex.com).
 
 - TokenizeHtml<br />
   Tokenize HTML content into words and tags
@@ -21,10 +24,10 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 
 **Procedural scripts**
 - composer_browser<br />
-  Run `composer install` in browser
+  Run `composer install` in browser.
 
 - phpcsfixer_browser<br />
-  Run PHP-CS-Fixer in browser (checking only, no fixing)
+  Run PHP-CS-Fixer in browser (checking only, no fixing).
 
 - phpunit_browser<br />
-  Run PHPUnit tests in browser
+  Run PHPUnit tests in browser.

@@ -1,0 +1,115 @@
+### Text to Calendar
+
+**Purpose**<br />
+Generate Excel calendar from formatted text using PHPExcel 1.7.9 library (http://phpexcel.codeplex.com).
+
+**Example**
+```
+** Lines starting with ** are treated as comments and will be ignored
+
+*START COMMENT*
+  This is a comment section - text in here will not be processed.
+  Sections begin with a start tag and end tag.
+  Each section consists of details, one per line, in the format "Detail: Value".
+  Blank lines will be ignored.
+  Spaces before and after each line will be trimmed.
+*END COMMENT*
+
+
+** Configuration settings for entire worksheet - this section MUST come before
+** all the other sections except for comments
+*START CONFIG*
+ Start Time: 0900
+ End Time: 2330
+ Interval: 30
+ Font Name: Calibri
+ Font Size: 11
+*END CONFIG*
+
+
+** Define constants for easy reference to colors used in font color and fill color
+** Format - <Name>: <Hexadecimal RGB color code>
+** The color constants are defined by default and are shown as an example
+*START COLORS*
+ None:
+ Red: FF0000
+ Green: 00FF00
+ Blue: 0000FF
+ Cyan: 00FFFF
+ Magenta: FF00FF
+ Yellow: FFFF00
+ Gray: C0C0C0
+ Black: 000000
+ White: FFFFFF
+*END COLORS*
+
+
+** Start a new day - a day consists of many events
+** Fill Color - use RGB color code or color constant to set fill color for cell
+** Font Color - use RGB color code or color constant to set font color
+*START DAY*
+ Fill Color: Blue
+ Font Color: White
+ Title: Thu 06 Feb 2014
+*END DAY*
+
+
+** Start a new event - an event has many details
+** Default details are Fill Color, Font Color, Title, Start Time and End Time
+** Values of additional details will be output as 1 line each
+** To insert a blank line in between details, use ==
+** To insert a new line within a value, use ==
+** Example - Notes: 1st line==2nd line
+*START EVENT*
+ Title: 1st Event
+ ==
+ Start Time: 0930
+ End Time: 1100
+ ==
+ Remarks: Breakfast with friends
+*END EVENT*
+
+
+*START EVENT*
+ Title: Test Event Slotting
+ ==
+ Start Time: 1000
+ End Time: 1030
+ ==
+ Venue: Park
+*END EVENT*
+
+
+*START EVENT*
+ Title: Musical
+ ==
+ Start Time: 2000
+ End Time: 2200
+ ==
+ Venue: Theatre
+ Capacity: 400 pax
+ ==
+ Notes: To be or not to be,==That is the question.
+*END EVENT*
+
+
+*START DAY*
+ Title: Fri 07 Feb 2014
+*END DAY*
+
+
+*START DAY*
+ Title: Sat 08 Feb 2014
+*END DAY*
+
+
+*START EVENT*
+ Fill Color: Yellow
+ Title: The quick brown fox jumps over the lazy old dog
+ ==
+ Start Time: 1400
+ End Time: 1600
+*END EVENT*
+```
+_BECOMES_
+![Screenshot of result](https://raw.github.com/zionsg/standalone-php-scripts/master/TextToCalendar/screenshot.png)
