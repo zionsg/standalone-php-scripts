@@ -567,6 +567,21 @@ class TextToCalendar
                    'borders' => $this->borderStyle,
                ));
 
+        // Merge day columns for header row
+        // Must merge after day is over and not after each event as merging already-merged cells will cause errors
+        $this->sheet
+             ->mergeCellsByColumnAndRow($firstCol, $this->headerRow, $lastCol, $this->headerRow)
+             ->getStyle(
+                   PHPExcel_Cell::stringFromColumnIndex($firstCol)
+                   . $this->headerRow
+                   . ':'
+                   . PHPExcel_Cell::stringFromColumnIndex($lastCol)
+                   . $this->headerRow
+               )
+             ->applyFromArray(array(
+                   'borders' => $this->borderStyle,
+               ));
+
         // Increment column index and clear previous day column info
         $this->currCol++;
         $this->currDayCols = array();
@@ -669,26 +684,6 @@ class TextToCalendar
         $this->setEstimatedRowHeight(
             $eventCol, $this->timeRows[$startTimeStr], $eventCol, $this->timeRows[$endTimeStr]
         );
-
-        // Merge day columns for header row
-        if (count($this->currDayCols) > 1) {
-            reset($this->currDayCols);
-            $firstCol = key($this->currDayCols);
-            end($this->currDayCols);
-            $lastCol = key($this->currDayCols);
-            $this->sheet
-                 ->mergeCellsByColumnAndRow($firstCol, $this->headerRow, $lastCol, $this->headerRow)
-                 ->getStyle(
-                       PHPExcel_Cell::stringFromColumnIndex($firstCol)
-                       . $this->headerRow
-                       . ':'
-                       . PHPExcel_Cell::stringFromColumnIndex($lastCol)
-                       . $this->headerRow
-                   )
-                 ->applyFromArray(array(
-                       'borders' => $this->borderStyle,
-                   ));
-        }
 
     } // end function addEvent
 }
