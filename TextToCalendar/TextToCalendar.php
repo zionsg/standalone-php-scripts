@@ -112,7 +112,7 @@ class TextToCalendar
      *
      * @var string
      */
-    protected $detailPattern = '/^(.+):(.*)$/';
+    protected $detailPattern = '/^([^:]+):(.*)$/';
 
     /**
      * Text to insert blank line between details or insert newline in the value of a detail
