@@ -13,9 +13,22 @@ class TextToCalendar
     /**
      * Constants defined in text
      *
+     * Currently used for defining color constants.
+     *
      * @var array
      */
-    protected $constants = array();
+    protected $constants = array(
+        'None'    => '',
+        'Red'     => 'FF0000',
+        'Green'   => '00FF00',
+        'Blue'    => '0000FF',
+        'Cyan'    => '00FFFF',
+        'Magenta' => 'FF00FF',
+        'Yellow'  => 'FFFF00',
+        'Gray'    => 'C0C0C0',
+        'Black'   => '000000',
+        'White'   => 'FFFFFF',
+    );
 
     /**
      * Workbook
@@ -176,18 +189,8 @@ class TextToCalendar
         ),
 
         // Color constants. Format - <Name>: <RGB color code>
-        'Colors' => array(
-            'None'    => '',
-            'Red'     => 'FF0000',
-            'Green'   => '00FF00',
-            'Blue'    => '0000FF',
-            'Cyan'    => '00FFFF',
-            'Magenta' => 'FF00FF',
-            'Yellow'  => 'FFFF00',
-            'Gray'    => 'C0C0C0',
-            'Black'   => '000000',
-            'White'   => 'FFFFFF',
-        ),
+        // @see $constants for defined color constants
+        'Colors' => array(),
 
         // A day consists of many events and may span more than 1 column
         'Day' => array(
