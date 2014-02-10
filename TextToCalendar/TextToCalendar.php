@@ -446,10 +446,10 @@ class TextToCalendar
              ->setFitToHeight(1);
         $this->sheet
              ->getPageMargins()
-             ->setTop(0.5) // inches
-             ->setBottom(0.5)
-             ->setLeft(0.5)
-             ->setRight(0.5);
+             ->setTop(0.2) // 0.2 inches is about 0.5 cm
+             ->setBottom(0.2)
+             ->setLeft(0.2)
+             ->setRight(0.2);
 
         // Set sheet name. Print title and timestamp in cells A1 and A2 respectively
         $this->sheet->setTitle('Calendar');
