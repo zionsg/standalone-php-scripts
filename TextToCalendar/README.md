@@ -18,18 +18,21 @@ Generate Excel calendar from formatted text using PHPExcel 1.7.9 library (http:/
 
 ** Configuration settings for entire worksheet - this section MUST come before
 ** all the other sections except for comments
+** 'Column Width' applies only to columns containing events
 *START CONFIG*
+ Title: Text to Calendar (https://github.com/zionsg/standalone-php-scripts/tree/master/TextToCalendar)
  Start Time: 0900
  End Time: 2330
  Interval: 30
  Font Name: Calibri
  Font Size: 11
+ Column Width: 10
 *END CONFIG*
 
 
 ** Define constants for easy reference to colors used in font color and fill color
 ** Format - <Name>: <Hexadecimal RGB color code>
-** The color constants are defined by default and are shown as an example
+** The color constants below are defined by default and are shown as an example
 *START COLORS*
  None:
  Red: FF0000
