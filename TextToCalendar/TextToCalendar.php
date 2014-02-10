@@ -398,8 +398,12 @@ class TextToCalendar
         $totalRowHeight = ($fontSize / 11) * (10 / $colWidth) * ($lineCount * 15);
         $rowHeight = $totalRowHeight / ($endRow - $startRow + 1); // distribute among multiple rows
 
+        // Set row height only if current row height is less than computed one else will mess up previous events
         for ($i = $startRow; $i <= $endRow; $i++) {
-            $this->sheet->getRowDimension($i)->setRowHeight($rowHeight);
+            $rowDimension = $this->sheet->getRowDimension($i);
+            if ($rowDimension->getRowHeight() < $rowHeight) {
+                $rowDimension->setRowHeight($rowHeight);
+            }
         }
     }
 
