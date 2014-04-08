@@ -66,11 +66,20 @@ class CrawlSite
     );
 
     /**
-     * Path to directory where site resides in - for determining downward links
+     * Path to directory (without www) where site resides in - for determining downward links
      *
+     * @example http://example.com/
      * @var string
      */
     protected $siteDir = '';
+
+    /**
+     * Path to directory (with www) where site resides in - for determining downward links
+     *
+     * @example http://www.example.com/
+     * @var string
+     */
+    protected $siteDirWww = '';
 
     /**
      * CURL Handler
@@ -148,11 +157,15 @@ class CrawlSite
 
         // Get path to directory where $site resides in - for determining downward links
         // parse_url() used else http://example.com will give ".com" extension
-        if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) {
-            $this->siteDir = pathinfo($site, PATHINFO_DIRNAME) . '/';
-        } else {
+        if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) { // eg. http://example.com/index.php
+            $siteDir = str_replace('://www.', '://', pathinfo($site, PATHINFO_DIRNAME)) . '/';
+            $this->siteDir = $siteDir;
+            $this->siteDirWww = str_replace('://', '://www.', $siteDir);
+        } else { // eg. http://example.com/
             $site = rtrim($site, "\\/") . '/';
-            $this->siteDir = $site;
+            $siteDir = str_replace('://www.', '://', $site);
+            $this->siteDir = $siteDir;
+            $this->siteDirWww = str_replace('://', '://www.', $siteDir);
         }
 
         // Clear any previous work
@@ -168,7 +181,7 @@ class CrawlSite
             // Only process downward links
             // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
             // and to ensure http://example.com will match http://example.com/
-            if (stripos($url . '/', $this->siteDir) === false) {
+            if (!$this->isDownwardLink($url)) {
                 continue;
             }
 
@@ -192,7 +205,7 @@ class CrawlSite
             }
             // Replace contents with meta tag if last effective url of webpage is not a downward link
             $effectiveUrl = curl_getinfo($this->curlHandler, CURLINFO_EFFECTIVE_URL);
-            if (stripos($effectiveUrl . '/', $this->siteDir) === false) {
+            if (!$this->isDownwardLink($effectiveUrl)) {
                 $contents = sprintf(
                     '<meta http-equiv="refresh" content="0;url=%s">',
                     $effectiveUrl
@@ -288,6 +301,20 @@ class CrawlSite
     }
 
     /**
+     * Check if a url is a downward link
+     *
+     * @param  string $url
+     * @return bool
+     */
+    protected function isDownwardLink($url)
+    {
+        // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
+        // and to ensure http://example.com will match http://example.com/
+        $url .= '/';
+        return (stripos($url, $this->siteDir) !== false) || (stripos($url, $this->siteDirWww) !== false);
+    }
+
+    /**
      * Process link including queueing and renaming it
      *
      * Only webpages will be queued and renamed to absolute paths
@@ -310,7 +337,7 @@ class CrawlSite
             // url_to_absolute cannot handle spaces in paths, hence replacing with %20
             $link = rawurldecode(url_to_absolute($baseUrl, str_replace(' ', '%20', $link)));
 
-            if (stripos($link, $this->siteDir) !== false) {
+            if ($this->isDownwardLink($link)) {
                 $renamedLink  = $this->renameUrl($link);
             } else {
                 $renamedLink = $link;
