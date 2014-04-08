@@ -179,8 +179,6 @@ class CrawlSite
             $this->processed[$url] = true;
 
             // Only process downward links
-            // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
-            // and to ensure http://example.com will match http://example.com/
             if (!$this->isDownwardLink($url)) {
                 continue;
             }
@@ -260,8 +258,8 @@ class CrawlSite
             // Unlike urls, %20 and spaces not the same for files, hence %20 must be converted back to spaces
             $renamedUrl = $this->renameUrl($url);
             $filename   = preg_replace(
-                '~^(.*:[\\/]{2})~',
-                str_replace("\\", '/', getcwd()) . '/',
+                array('~^(.*:[\\/]{2})~', '~:([0-9]{1,})~'),
+                array(str_replace("\\", '/', getcwd()) . '/', '_\\1'),
                 $renamedUrl
             );
             $filename = str_replace('%20', ' ', $filename);
