@@ -4,6 +4,9 @@ Standalone PHP Scripts
 In general, folders with names in `StudlyCaps` contain classes (OOP) while those in lowercase contain procedural scripts.
 
 **Classes**
+- CrawlSite<br />
+  Crawl website using downwards traversal only.
+
 - DirectoryListing<br />
   Retrieve directory listing with folder/file count and size info.
 
