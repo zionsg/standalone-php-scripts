@@ -82,6 +82,22 @@ class CrawlSite
     protected $siteDirWww = '';
 
     /**
+     * Alias path to directory (without www) where site resides in - for determining downward links
+     *
+     * @example http://example.com/
+     * @var string
+     */
+    protected $siteDirAlias = '';
+
+    /**
+     * Alias path to directory (with www) where site resides in - for determining downward links
+     *
+     * @example http://www.example.com/
+     * @var string
+     */
+    protected $siteDirAliasWww = '';
+
+    /**
      * CURL Handler
      *
      * @var resource
@@ -150,25 +166,21 @@ class CrawlSite
      * Links in <meta> refresh tags are checked as well in addition to $linksToCheck.
      *
      * @param  string $site
+     * @param  string $siteAlias Sometimes it may not be possible to crawl a live site as its web server
+     *                           may reject/throttle the many incoming page requests. If the user has
+     *                           a copy of the site on localhost, this script can be run as
+     *                           __invoke('http://127.0.0.1:1234/site2000', 'http://example.com/site2000')
+     *                           and all links under $siteAlias will be renamed to reflect $site
      * @return array  array('webpage' => array(link1, link2, ...))
      */
-    function __invoke($site)
+    function __invoke($site, $siteAlias = null)
     {
-        // Get path to directory where $site resides in - for determining downward links
-        // parse_url() used else http://example.com will give ".com" extension
-        if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) { // eg. http://example.com/index.php
-            $siteDir = str_replace('://www.', '://', pathinfo($site, PATHINFO_DIRNAME)) . '/';
-            $this->siteDir = $siteDir;
-            $this->siteDirWww = str_replace('://', '://www.', $siteDir);
-        } else { // eg. http://example.com/
-            $site = rtrim($site, "\\/") . '/';
-            $siteDir = str_replace('://www.', '://', $site);
-            $this->siteDir = $siteDir;
-            $this->siteDirWww = str_replace('://', '://www.', $siteDir);
-        }
-
-        // Clear any previous work
+        // Clear any previous work and init variables
         clearstatcache();
+        $this->computeSiteDir($site);
+        if ($siteAlias) {
+            $this->computeSiteDir($siteAlias, 'siteDirAlias', 'siteDirAliasWww');
+        }
         $this->queue = array($site => $site); // $site is used as key to prevent duplicates
         $this->processed = array();
         $this->links = array();
@@ -192,6 +204,12 @@ class CrawlSite
             $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
             if ($extension && !in_array($extension, $this->pageExtensions)) {
                 continue;
+            }
+
+            // Rename url if it contains site alias - at this point it is certain that this is a downward link
+            if ($this->siteDirAlias) {
+                $url = str_replace($this->siteDirAlias, $this->siteDir, $url);
+                $url = str_replace($this->siteDirAliasWww, $this->siteDirWww, $url);
             }
 
             // Get contents of webpage using CURL
@@ -299,17 +317,65 @@ class CrawlSite
     }
 
     /**
+     * Compute site directories (without and with www)
+     *
+     * @param  string $site
+     * @param  string $siteDirVar    Name of property to store site dir without www
+     * @param  string $siteDirWwwVar Name of property to store site dir with www
+     * @return void
+     */
+    protected function computeSiteDir($site, $siteDirVar = 'siteDir', $siteDirWwwVar = 'siteDirWww')
+    {
+        // Get path to directory where $site resides in - for determining downward links
+        // parse_url() used else http://example.com will give ".com" extension
+        if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) { // eg. http://example.com/index.php
+            $siteDir = str_replace('://www.', '://', pathinfo($site, PATHINFO_DIRNAME)) . '/';
+            $this->{$siteDirVar} = $siteDir;
+            $this->{$siteDirWwwVar} = str_replace('://', '://www.', $siteDir);
+        } else { // eg. http://example.com/
+            $site = rtrim($site, "\\/") . '/';
+            $siteDir = str_replace('://www.', '://', $site);
+            $this->{$siteDirVar} = $siteDir;
+            $this->{$siteDirWwwVar} = str_replace('://', '://www.', $siteDir);
+        }
+    }
+
+    /**
      * Check if a url is a downward link
      *
-     * @param  string $url
+     * If the url is a downward link of $siteDirAlias or $siteDirAliasWww,
+     * the url is modified to use $siteDir (without www).
+     *
+     * @param  string $url Passed in by reference
      * @return bool
      */
-    protected function isDownwardLink($url)
+    protected function isDownwardLink(&$url)
     {
         // "/" is appended to prevent http://example.com/test from being matched in http://example.com/test123
         // and to ensure http://example.com will match http://example.com/
-        $url .= '/';
-        return (stripos($url, $this->siteDir) !== false) || (stripos($url, $this->siteDirWww) !== false);
+        $urlWithSlash = $url . '/';
+        if (   (stripos($urlWithSlash, $this->siteDir) !== false)
+            || (stripos($urlWithSlash, $this->siteDirWww) !== false)
+        ) {
+            return true;
+        }
+
+        // Check site dir alias
+        if (!$this->siteDirAlias) {
+            return false;
+        }
+
+        if (stripos($urlWithSlash, $this->siteDirAlias) !== false) {
+            $url = str_replace($this->siteDirAlias, $this->siteDir, $url);
+            return true;
+        }
+
+        if (stripos($urlWithSlash, $this->siteDirAliasWww) !== false) {
+            $url = str_replace($this->siteDirAliasWww, $this->siteDir, $url);
+            return true;
+        }
+
+        return false;
     }
 
     /**
