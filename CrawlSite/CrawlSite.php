@@ -127,6 +127,7 @@ class CrawlSite
             CURLOPT_RETURNTRANSFER => true, // return value instead of output to browser
             CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'], // some servers reject requests with no user agent
             CURLOPT_SSL_VERIFYPEER => false, // for HTTPS sites
+            CURLOPT_FRESH_CONNECT => true,
         ));
     }
 
@@ -153,8 +154,6 @@ class CrawlSite
      */
     function __invoke($site)
     {
-        $dom = new DOMDocument();
-
         // Get path to directory where $site resides in - for determining downward links
         // parse_url() used else http://example.com will give ".com" extension
         if (pathinfo(parse_url($site, PHP_URL_PATH), PATHINFO_EXTENSION)) { // eg. http://example.com/index.php
@@ -212,6 +211,7 @@ class CrawlSite
             }
 
             // Parse HTML - @ suppresses any warnings that loadHTML might throw because of invalid HTML in the page
+            $dom = new DOMDocument();
             @$dom->loadHTML($contents);
 
             // Need to check for meta refresh tags else crawling may stop at index page
@@ -326,7 +326,7 @@ class CrawlSite
         $extension = pathinfo(parse_url($link, PHP_URL_PATH), PATHINFO_EXTENSION);
 
         if (trim($link) == '') { // Empty link
-           $renamedLink = $link;
+            $renamedLink = $link;
         } elseif (substr($link, 0, 11) == 'javascript:') { // Javascript links
             $renamedLink = $link;
         } elseif ($extension && !in_array($extension, $this->pageExtensions)) { // Non-webpages such as .css, .js, .jpg
