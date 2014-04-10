@@ -30,7 +30,7 @@ class CrawlSite
      *
      * @var array
      */
-    protected $pageExtensions = array('htm', 'html', 'php');
+    protected $pageExtensions = array('htm', 'html', 'php', 'phtml');
 
     /**
      * Default extension for local copy of webpage
@@ -230,6 +230,7 @@ class CrawlSite
 
             // Parse HTML - @ suppresses any warnings that loadHTML might throw because of invalid HTML in the page
             $dom = new DOMDocument();
+            /* $contents = str_replace('<?xml version="1.0" encoding="utf-8"?>', '', $contents); // remove XML tags from PHP files */
             @$dom->loadHTML($contents);
 
             // Need to check for meta refresh tags else crawling may stop at index page
