@@ -4,6 +4,13 @@
  *
  * This can be used to convert a dynamic PHP site to a static site as local copies of
  * webpages are saved with dynamic links changed to static ones, eg: test.php?id=3 => test_id-3.php
+ * Assets such as images, .css and .js are not saved.
+ *
+ * After conversion, the following will need to be done manually:
+ *   1) Remove XML tags from PHP files else they may not parse properly if short_tags are enabled
+ *      Eg: <?xml version="1.0" encoding="utf-8"?>
+ *   2) Convert the files to UTF-8 encoding with BOM. Bulk conversion can be done via the PythonScript plugin
+ *      in Notepad++. See https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite/npp_convert_utf8.py
  *
  * Usage:
  *     $crawler = new CrawlSite();
@@ -230,8 +237,8 @@ class CrawlSite
 
             // Parse HTML - @ suppresses any warnings that loadHTML might throw because of invalid HTML in the page
             $dom = new DOMDocument();
-            /* $contents = str_replace('<?xml version="1.0" encoding="utf-8"?>', '', $contents); // remove XML tags from PHP files */
             @$dom->loadHTML($contents);
+            $doc->encoding = 'UTF-8';
 
             // Need to check for meta refresh tags else crawling may stop at index page
             foreach ($dom->getElementsByTagName('meta') as $element) {
