@@ -29,3 +29,4 @@ def processDirectory(args, dir, files):
 # Run script
 # processDirectory() will be called recursively for each directory encountered
 os.path.walk(path, processDirectory, None)
+console.write("\r\n" + 'DONE!' + "\r\n")
