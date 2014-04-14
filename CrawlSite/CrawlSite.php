@@ -54,8 +54,8 @@ class CrawlSite
      *
      * The pattern, if not empty, is used as a regular expression to extract the actual link
      * from the attribute, eg: <a onclick="ajaxLoad('get.php?page=content');">load content</a>.
-     * The pattern must have exactly 3 groups to facilitate search and replace: prefix, link, suffix,
-     * eg: ~(ajaxLoad\(')([^']+)('\);)~i
+     * The pattern must contain 3 named groups to facilitate search and replace: before, link, after.
+     * Eg: ~(?P<before>ajaxLoad\(')(?P<link>[^']+)(?P<after>'\);)~i
      *
      * @example <htmlTag1> => array(<tagAttribute1> => array(<attributePattern1>, <attributePattern2>))
      * @var     array
@@ -69,6 +69,11 @@ class CrawlSite
         ),
         'iframe' => array(
             'src' => array(''),
+        ),
+        'script' => array(
+            // '' as a tag attribute will check the textContent property of the DOMElement,
+            // in this case the contents of <script>
+            '' => array('~(?P<before>location\.href=([\'"]))(?P<link>[^\2]*)(?P<after>\2)~'),
         ),
     );
 
@@ -257,21 +262,23 @@ class CrawlSite
             foreach ($this->linkTypes as $linkTag => $linkAttributes) {
                 foreach ($dom->getElementsByTagName($linkTag) as $element) {
                     foreach ($linkAttributes as $linkAttrib => $linkPatterns) {
-                        $value = $element->getAttribute($linkAttrib);
+                        $value = ('' == $linkAttrib)
+                               ? $element->textContent
+                               : $element->getAttribute($linkAttrib);
                         foreach ($linkPatterns as $linkPattern) {
                             if (!$linkPattern) {
                                 $link = $this->processLink($value, $url);
                                 $element->setAttribute($linkAttrib, $link);
                             } else {
                                 $matches = array();
-                                // Pattern has 3 groups: '~(prefix)(link)(suffix)~'
+                                // Pattern has 3 named groups: '~(before)(link)(after)~'
                                 if (!preg_match($linkPattern, $value, $matches)) {
                                     continue;
                                 }
-                                $link = $this->processLink($matches[2], $url);
+                                $link = $this->processLink($matches['link'], $url);
                                 $element->setAttribute($linkAttrib, preg_replace(
                                     $linkPattern,
-                                    '\1' . $link . '\3',
+                                    $matches['before'] . $link . $matches['after'],
                                     $value
                                 ));
                             }
