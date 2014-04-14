@@ -13,6 +13,7 @@
  *      in Notepad++. See https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite/npp_convert_utf8.py
  *
  * Usage:
+ *     set_time_limit(0); // can take more than 30 mins
  *     $crawler = new CrawlSite();
  *     $links = $crawler('http://example.com/test/');
  *     echo '<pre>' . print_r($links, true) . '</pre>';
@@ -71,9 +72,10 @@ class CrawlSite
             'src' => array(''),
         ),
         'script' => array(
-            // '' as a tag attribute will check the textContent property of the DOMElement,
-            // in this case the contents of <script>
-            '' => array('~(?P<before>location\.href=([\'"]))(?P<link>[^\2]*)(?P<after>\2)~'),
+            // '' as a tag attribute will check the textContent property of the DOMElement
+            // (in this case the contents of <script>) for each regex pattern RECURSIVELY using preg_match_all()
+            // as there may be more than 1 occurrence
+            '' => array('~(?P<before>location\.href=([\'"]))(?P<link>.+)(?P<after>\2)~'),
         ),
     );
 
@@ -262,25 +264,53 @@ class CrawlSite
             foreach ($this->linkTypes as $linkTag => $linkAttributes) {
                 foreach ($dom->getElementsByTagName($linkTag) as $element) {
                     foreach ($linkAttributes as $linkAttrib => $linkPatterns) {
-                        $value = ('' == $linkAttrib)
-                               ? $element->textContent
-                               : $element->getAttribute($linkAttrib);
-                        foreach ($linkPatterns as $linkPattern) {
-                            if (!$linkPattern) {
-                                $link = $this->processLink($value, $url);
-                                $element->setAttribute($linkAttrib, $link);
-                            } else {
-                                $matches = array();
-                                // Pattern has 3 named groups: '~(before)(link)(after)~'
-                                if (!preg_match($linkPattern, $value, $matches)) {
-                                    continue;
+                        if ($linkAttrib) {
+                            $value = $element->getAttribute($linkAttrib);
+                            foreach ($linkPatterns as $linkPattern) {
+                                if (!$linkPattern) {
+                                    $link = $this->processLink($value, $url);
+                                    $element->setAttribute($linkAttrib, $link);
+                                } else {
+                                    // Pattern has 3 named groups: '~(before)(link)(after)~'
+                                    $matches = array();
+                                    if (!preg_match($linkPattern, $value, $matches)) {
+                                        continue;
+                                    }
+                                    $link = $this->processLink($matches['link'], $url);
+                                    $element->setAttribute($linkAttrib, preg_replace(
+                                        $linkPattern,
+                                        $matches['before'] . $link . $matches['after'],
+                                        $value
+                                    ));
                                 }
-                                $link = $this->processLink($matches['link'], $url);
-                                $element->setAttribute($linkAttrib, preg_replace(
-                                    $linkPattern,
-                                    $matches['before'] . $link . $matches['after'],
-                                    $value
-                                ));
+                            }
+                        } else { // check node contents and replace $element->nodeValue (textContent is readonly)
+                            $value = $element->textContent;
+                            foreach ($linkPatterns as $linkPattern) {
+                                if (!$linkPattern) {
+                                    $link = $this->processLink($value, $url);
+                                    $element->nodeValue = $link;
+                                } else {
+                                    // Pattern has 3 named groups: '~(before)(link)(after)~'
+                                    $matches = array();
+                                    if (!preg_match_all($linkPattern, $value, $matches, PREG_OFFSET_CAPTURE)) {
+                                        continue;
+                                    }
+
+                                    // String together new content
+                                    $newContent = '';
+                                    $matchCnt = count($matches[0]);
+                                    $prevOffset = 0;
+                                    for ($i = 0; $i < $matchCnt; $i++) {
+                                        $link = $this->processLink($matches['link'][$i][0], $url);
+                                        // Add preceding content, <before>, link and <after>
+                                        $newContent .= substr($value, $prevOffset, $matches['before'][$i][1] - $prevOffset)
+                                                     . $matches['before'][$i][0] . $link . $matches['after'][$i][0];
+                                        $prevOffset = $matches['after'][$i][1] + strlen($matches['after'][$i][0]);
+                                    }
+                                    $newContent .= substr($value, $prevOffset); // append rest of content
+                                    $element->nodeValue = $newContent;
+                                }
                             }
                         }
                     }
