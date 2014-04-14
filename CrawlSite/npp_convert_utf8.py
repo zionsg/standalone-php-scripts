@@ -10,7 +10,7 @@ import os;
 import sys;
 
 # Modify path and extensions of files to convert here
-path = 'D:\\Home (Zion)\\localhost\\www\\zion\\crawler\\127.0.0.1_26533\\wgs2007'
+path = 'D:\\localhost\\files'
 extensions = ['.htm', '.html', '.php', '.phtml']
 
 # Function to convert files in dir to UTF-8 without BOM using Notepad++
