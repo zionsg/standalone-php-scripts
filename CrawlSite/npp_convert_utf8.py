@@ -10,11 +10,8 @@ import os;
 import sys;
 
 # Modify path and extensions of files to convert here
-path = 'path/to/files'
+path = 'D:\\Home (Zion)\\localhost\\www\\zion\\crawler\\127.0.0.1_26533\\wgs2007'
 extensions = ['.htm', '.html', '.php', '.phtml']
-
-# processDirectory() will be called recursively for each directory encountered
-os.path.walk(path, processDirectory, None)
 
 # Function to convert files in dir to UTF-8 without BOM using Notepad++
 def processDirectory(args, dir, files):
@@ -28,3 +25,7 @@ def processDirectory(args, dir, files):
           notepad.save()
           notepad.close()
           break
+
+# Run script
+# processDirectory() will be called recursively for each directory encountered
+os.path.walk(path, processDirectory, None)
