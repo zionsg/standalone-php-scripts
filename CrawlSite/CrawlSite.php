@@ -218,6 +218,11 @@ class CrawlSite
             $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
             if ($extension && !in_array($extension, $this->pageExtensions)) {
                 continue;
+            } elseif (!$extension) {
+                // Ensure directories such as http://example.com/test is coded as http://example.com/test/
+                // url_to_absolute('http://example.com/test', 'sample.php') => http://example.com/sample.php
+                // url_to_absolute('http://example.com/test/', 'sample.php') => http://example.com/test/sample.php
+                $url = rtrim($url, "\\/") . '/';
             }
 
             // Rename url if it contains site alias - at this point it is certain that this is a downward link
@@ -266,6 +271,7 @@ class CrawlSite
                     foreach ($linkAttributes as $linkAttrib => $linkPatterns) {
                         if ($linkAttrib) {
                             $value = $element->getAttribute($linkAttrib);
+
                             foreach ($linkPatterns as $linkPattern) {
                                 if (!$linkPattern) {
                                     $link = $this->processLink($value, $url);
