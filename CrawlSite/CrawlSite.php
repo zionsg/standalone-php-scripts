@@ -518,6 +518,11 @@ class CrawlSite
 
         if (isset($parts['query'])) {
             $parts['query'] = str_replace(array('=', '&'), array('-', '_'), $parts['query']);
+            $parts['query'] = str_replace(
+                array(' ', '"', '\\', '/', ':', '?', '*', '<', '>', '|'),
+                '',
+                $parts['query']
+            );
             $parts['path'] = substr($parts['path'], 0, -(1 + strlen($extension))) . "_{$parts['query']}.{$extension}";
             unset($parts['query']);
         }
