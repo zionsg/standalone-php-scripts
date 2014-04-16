@@ -18,9 +18,9 @@
  *     $links = $crawler('http://example.com/test/');
  *     echo '<pre>' . print_r($links, true) . '</pre>';
  *
- * @author  Zion Ng <zion@intzone.com>
- * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite
- * @since   2013-11-06T19:00+08:00
+ * @author Zion Ng <zion@intzone.com>
+ * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite
+ * @since  2013-11-06T19:00+08:00
  */
 
 include 'UrlToAbsolute/url_to_absolute.php';
@@ -155,9 +155,10 @@ class CrawlSite
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true, // return value instead of output to browser
+            CURLOPT_HEADER => true, // include headers in return value for inspection
             CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'], // some servers reject requests with no user agent
             CURLOPT_SSL_VERIFYPEER => false, // for HTTPS sites
-            CURLOPT_FRESH_CONNECT => true,
+            CURLOPT_FRESH_CONNECT => true, // prevent caching problems
         ));
     }
 
@@ -231,14 +232,28 @@ class CrawlSite
                 $url = str_replace($this->siteDirAliasWww, $this->siteDirWww, $url);
             }
 
-            // Get contents of webpage using CURL
+            // Get contents of webpage using CURL - headers are prepended as well
             curl_setopt($this->curlHandler, CURLOPT_URL, $url);
             $contents = curl_exec($this->curlHandler);
             if ($contents === false) {
                 continue;
             }
-            // Replace contents with meta tag if last effective url of webpage is not a downward link
+            // CURLINFO_EFFECTIVE_URL may not always reflect redirects, hence checking of headers
             $effectiveUrl = curl_getinfo($this->curlHandler, CURLINFO_EFFECTIVE_URL);
+            $headerSize = curl_getinfo($this->curlHandler, CURLINFO_HEADER_SIZE);
+            $headers = explode("\n", substr($contents, 0, $headerSize));
+            $contents = substr($contents, $headerSize);
+            foreach ($headers as $header) {
+                list($key, $value) = array_map('trim', explode(':', $header, 2)); // limit to 2 tokens cos of http://
+                if ('Location' == $key) {
+                    $effectiveUrl = $value;
+                    break;
+                } elseif ('Refresh' == $key) {
+                    $effectiveUrl = trim(substr($value, stripos($value, 'url=') + 4));
+                    break;
+                }
+            }
+            // Replace contents with meta tag if last effective url of webpage is not a downward link
             if (!$this->isDownwardLink($effectiveUrl)) {
                 $contents = sprintf(
                     '<meta http-equiv="refresh" content="0;url=%s">',
