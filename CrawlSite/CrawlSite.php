@@ -54,9 +54,9 @@ class CrawlSite
      * <base> and <link> are excluded.
      *
      * The pattern, if not empty, is used as a regular expression to extract the actual link
-     * from the attribute, eg: <a onclick="ajaxLoad('get.php?page=content');">load content</a>.
+     * from the attribute, eg: <a onclick="alert(jQuery.get('get.php?page=content').readyState);">load content</a>.
      * The pattern must contain 3 named groups to facilitate search and replace: before, link, after.
-     * Eg: ~(?P<before>ajaxLoad\(')(?P<link>[^']+)(?P<after>'\);)~i
+     * Eg: ~(?P<before>jQuery\.get\(')(?P<link>[^']+)(?P<after>'\);)~i
      *
      * @example <htmlTag1> => array(<tagAttribute1> => array(<attributePattern1>, <attributePattern2>))
      * @var     array
