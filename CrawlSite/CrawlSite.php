@@ -273,7 +273,7 @@ class CrawlSite
                     continue;
                 }
                 $matches = array();
-                if (!preg_match('~^(.*)url=(.*)$~i', $element->getAttribute('content'), $matches)) {
+                if (!preg_match('~^(.*url=)(.*)$~i', $element->getAttribute('content'), $matches)) {
                     continue;
                 }
                 $link = $this->processLink($matches[2], $url);
