@@ -1,7 +1,7 @@
 ### SplitSchoolClass
 
 **Purpose**<br />
-Split text containing school class names into individual classes
+Split text containing school class names into individual classes.
 
 **Example**
 ```php
