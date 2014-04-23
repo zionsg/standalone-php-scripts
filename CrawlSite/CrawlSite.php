@@ -269,7 +269,7 @@ class CrawlSite
 
             // Need to check for meta refresh tags else crawling may stop at index page
             foreach ($dom->getElementsByTagName('meta') as $element) {
-                if ($element->getAttribute('http-equiv') != 'refresh') {
+                if (strcasecmp($element->getAttribute('http-equiv'), 'refresh') != 0) {
                     continue;
                 }
                 $matches = array();
