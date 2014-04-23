@@ -4,7 +4,7 @@
  *
  * Usage:
  *     $splitter = new SplitSchoolClass();
- *     $classes = $splitter('1A, 2B-D, 3W1, 3X2-4, 4Y1-4Y2 & 5Z1 (10) [] { }');
+ *     $classes = $splitter('1A, 2B-D, 3W1, 3X2-4(brackets are ignored), 4Y1-4Y2 & 5Z1 (10) [] { }');
  *     echo '<pre>' . print_r($classes, true) . '</pre>';
  *
  * @author Zion Ng <zion@intzone.com>
@@ -16,7 +16,7 @@ class SplitSchoolClass
     /**
      * Split text into school classes
      *
-     * @example '1A, 2B-D, 3W1, 3X2-4, 4Y1-4Y2 & 5Z1 (10) [] { }' returns
+     * @example '1A, 2B-D, 3W1, 3X2-4(brackets are ignored), 4Y1-4Y2 & 5Z1 (10) [] { }' returns
      *          array(1A, 2B, 2C, 2D, 3W1, 3X2, 3X3, 3X4, 4Y1, 4Y2, 5Z1)
      * @param   string $text
      * @return  array of class names
@@ -26,7 +26,7 @@ class SplitSchoolClass
         // Normalise text and remove unwanted brackets and characters including spaces
         $text = strtoupper(str_replace('&', ',', $text));
         $text = preg_replace(
-            '~\(.*\)|\[.*\]|\<.*\>|\{.*\}|[^A-Z0-9,\-]~',
+            '~\([^\)]*\)|\[[^\]]*\]|\<[^\>]*\>|\{[^\}]*\}|[^A-Z0-9,\-]~',
             '',
             $text
         );
