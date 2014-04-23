@@ -16,6 +16,9 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 - InlineImages<br />
   Get url content and replace images with inline images.
 
+- SplitSchoolClass<br />
+  Split text containing school class names into individual classes.
+
 - TextToCalendar<br />
   Generate Excel calendar from formatted text using PHPExcel library (http://phpexcel.codeplex.com).
 
