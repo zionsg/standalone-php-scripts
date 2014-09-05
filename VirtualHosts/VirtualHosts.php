@@ -73,6 +73,7 @@ class VirtualHosts
         }
 
         // Print out hosts as <ul>
+        $output = '';
         if (!empty($hosts)) {
             $ports = array();
             $output = '<ul>' . PHP_EOL;
@@ -113,5 +114,4 @@ class VirtualHosts
 
         return $output;
     } // end function __invoke
-
 }
