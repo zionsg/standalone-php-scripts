@@ -26,6 +26,7 @@ $cells = array(
         }
         return ($column->COLUMN_TYPE ?: $column->DATA_TYPE);
     },
+    'Comments' => 'COLUMN_COMMENT',
 );
 
 // Get database info
