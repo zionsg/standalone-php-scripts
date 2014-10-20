@@ -47,8 +47,16 @@ if (($tables = getTableColumns($host, $database, $user, $password)) === false) {
 
 <div align="center"><b>Database: <?php echo $database; ?></b><br><i>(<?php echo count($tables); ?> tables)</i></div>
 
-<?php foreach ($tables as $table => $columns): ?>
-  <div><b>Table: <?php echo $table; ?></b><br><i>(<?php echo count($columns); ?> columns)</i></div>
+<?php foreach ($tables as $table => $schema): ?>
+  <?php
+  $info = $schema['info'];
+  $columns = $schema['columns'];
+  ?>
+  <div>
+    <b>Table: <?php echo $table; ?></b><br>
+    <?php echo ($info->TABLE_COMMENT ? $info->TABLE_COMMENT . '<br>' : ''); ?>
+    <i>(<?php echo count($columns); ?> columns)</i>
+  </div>
   <?php
   if (!$columns) {
       continue;
@@ -107,16 +115,24 @@ function getValue($column, $property)
 }
 
 /**
- * Return array of tables containing array of column information
+ * Return array of tables containing table info and array of column info
  *
  * @param  string $host
  * @param  string $database
  * @param  string $user
  * @param  string $password
- * @return array  array(<table1> => array(<column1> => <object with info as properties>, ...), ...)
+ * @return array  array(
+ *                    <table1> => array(
+ *                        'info' => <object with table info>,
+ *                        'columns' => array(<column1> => <object with info as properties>, ...),
+ *                    ),
+ *                    ...
+ *                )
  */
 function getTableColumns($host, $database, $user, $password)
 {
+    $tables = array();
+
     // Get db connection
     try {
         $db = new PDO(
@@ -133,22 +149,30 @@ function getTableColumns($host, $database, $user, $password)
         return false;
     }
 
-    // Query db
+    // Query db for table info
+    $stmt = $db->prepare(
+        "SELECT *
+         FROM information_schema.tables
+         WHERE table_schema = :database
+         ORDER BY table_name ASC"
+    );
+    $stmt->execute(array(':database' => $database));
+    $result = $stmt->fetchAll();
+    foreach ($result as $row) {
+        $tables[$row->TABLE_NAME]['info'] = $row;
+    }
+
+    // Query db for column info
     $stmt = $db->prepare(
         "SELECT *
          FROM information_schema.columns
          WHERE table_schema = :database
          ORDER BY table_name ASC, ordinal_position ASC"
     );
-    $stmt->execute(array(
-        ':database' => $database,
-    ));
+    $stmt->execute(array(':database' => $database));
     $result = $stmt->fetchAll();
-
-    // Group results by table
-    $tables = array();
     foreach ($result as $row) {
-        $tables[$row->TABLE_NAME][$row->COLUMN_NAME] = $row;
+        $tables[$row->TABLE_NAME]['columns'][$row->COLUMN_NAME] = $row;
     }
 
     // Close db connection
