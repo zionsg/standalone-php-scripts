@@ -26,6 +26,13 @@ $cells = array(
         }
         return ($column->COLUMN_TYPE ?: $column->DATA_TYPE);
     },
+    'Key' => function ($column) {
+        return str_replace(array('PRI', 'UNI', 'MUL'), array('Primary', 'Unique', 'Index'), $column->COLUMN_KEY);
+    },
+    'Default' => function($column) {
+        return ('YES' == $column->IS_NULLABLE && null === $column->COLUMN_DEFAULT ? 'null' : $column->COLUMN_DEFAULT);
+    },
+    'Extra' => 'EXTRA',
     'Comments' => 'COLUMN_COMMENT',
 );
 
@@ -41,7 +48,7 @@ if (($tables = getTableColumns($host, $database, $user, $password)) === false) {
   th { background-color: #ccc; }
   th, td {
     border: 1px solid #333;
-    padding: 2px;
+    padding: 2px 4px;
   }
 </style>
 
