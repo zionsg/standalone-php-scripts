@@ -30,7 +30,7 @@ $cells = array(
         return str_replace(array('PRI', 'UNI', 'MUL'), array('Primary', 'Unique', 'Index'), $column->COLUMN_KEY);
     },
     'Default' => function($column) {
-        return ('YES' == $column->IS_NULLABLE && null === $column->COLUMN_DEFAULT ? 'null' : $column->COLUMN_DEFAULT);
+        return ('YES' == $column->IS_NULLABLE && null === $column->COLUMN_DEFAULT ? 'NULL' : $column->COLUMN_DEFAULT);
     },
     'Extra' => 'EXTRA',
     'Comments' => 'COLUMN_COMMENT',
