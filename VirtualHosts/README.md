@@ -8,11 +8,11 @@ Generate list and config for port-based virtual hosts on local development machi
 Sample directory structure of server web root
   D:\EasyPHP\www
     alpha.com
-      www
+      public_html
     beta.com
-      www
+      public_html
     gamma.net
-      www
+      public_html
 ```
 ```php
 <?php
@@ -21,29 +21,38 @@ $params = array(
     'filterFunction' => function($folder) {
         return ('gamma.net' !== $folder);
     },
-    'showConfig' => true,
 );
-echo $instance($params);
+print_r($instance($params));
 ?>
 ```
 _BECOMES_
-<ul>
-  <li><a href="http://127.0.0.1:4388">alpha.com</a> (127.0.0.1:4388)</li>
-  <li><a href="http://127.0.0.1:3509">beta.com</a> (127.0.0.1:3509)</li>
-</ul>
+```
+Array
+(
+    [alpha.com] => Array
+        (
+            [uri] => 127.0.0.1:4388
+            [duplicatePort] => false
+            [config] => 
+                # alpha.com
+                Listen 127.0.0.1:4388
+                NameVirtualHost 127.0.0.1:4388
+                <VirtualHost 127.0.0.1:4388>
+                  DocumentRoot "${path}/alpha.com/public_html"
+                </VirtualHost>
+        )
 
-[CONFIG FOR APACHE HTTPD.CONF]<br />
-\# alpha\.com<br />
-Listen 127.0.0.1:4388<br />
-NameVirtualHost 127.0.0.1:4388<br />
-&lt;VirtualHost 127.0.0.1:4388&gt;<br />
-  DocumentRoot &quot;${path}\alpha.com\www&quot;<br />
-&lt;/VirtualHost&gt;<br />
-<br />
-\# beta\.com<br />
-Listen 127.0.0.1:3509<br />
-NameVirtualHost 127.0.0.1:3509<br />
-&lt;VirtualHost 127.0.0.1:3509&gt;<br />
-  DocumentRoot &quot;${path}\beta.com\www&quot;<br />
-&lt;/VirtualHost&gt;<br />
-<br />
+    [beta.com] => Array
+        (
+            [uri] => 127.0.0.1:3509
+            [duplicatePort] => false
+            [config] => 
+                # beta.com
+                Listen 127.0.0.1:3509
+                NameVirtualHost 127.0.0.1:3509
+                <VirtualHost 127.0.0.1:3509>
+                  DocumentRoot "${path}/beta.com/public_html"
+                </VirtualHost>
+        )
+)
+```
