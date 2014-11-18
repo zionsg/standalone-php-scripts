@@ -265,7 +265,7 @@ class CrawlSite
             // Parse HTML - @ suppresses any warnings that loadHTML might throw because of invalid HTML in the page
             $dom = new DOMDocument();
             @$dom->loadHTML($contents);
-            $doc->encoding = 'UTF-8';
+            $dom->encoding = 'UTF-8';
 
             // Need to check for meta refresh tags else crawling may stop at index page
             foreach ($dom->getElementsByTagName('meta') as $element) {
