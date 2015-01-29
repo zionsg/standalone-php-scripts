@@ -41,5 +41,8 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 - phpunit_browser<br />
   Run PHPUnit tests in browser.
 
+- rename_files<br />
+  Rename files in folder especially images with numbering
+
 - show_database_scheame<br />
   List out all the tables in a database together with the column information
