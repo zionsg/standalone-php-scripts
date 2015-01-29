@@ -7,6 +7,9 @@
  * @since  2015-01-29T08:00+08:00
  */
 
+// Change folder and prefix to run
+renameFiles('', renameImageWithNumbering(''));
+
 /**
  * Rename files in folder
  *
@@ -20,8 +23,15 @@
  */
 function renameFiles($folder, $renameCallback = null)
 {
+    if (!$folder || !file_exists($folder)) {
+        echo "Folder {$folder} does not exist";
+        return;
+    }
+
     echo "<b>Renaming files in {$folder}</b><br><br>";
 
+    $totalCnt = 0;
+    $successCnt = 0;
     foreach (scandir($folder) as $filename) {
         if (is_dir("{$folder}/{$filename}")) {
             continue;
@@ -33,31 +43,36 @@ function renameFiles($folder, $renameCallback = null)
         }
         $result = rename("{$folder}/{$filename}", "{$folder}/{$newFilename}");
 
+        $totalCnt++;
+        $successCnt += ($result ? 1 : 0);
         printf(
-            '%s: %s => %s<br>',
-            ($result ? true : false),
+            '%d) %s%s => %s<br>',
+            $totalCnt,
+            ($result ? '' : 'ERROR renaming '),
             $filename,
             $newFilename
         );
     }
 
-    echo '<br><b>Done!</b>';
+    echo "<br><b>Completed - {$successCnt}/{$totalCnt} files renamed</b>";
 }
 
 /**
  * Returns callback to rename image files with numbering
  *
- * @example "2015jan-1.jpg" with "test" as prefix becomes "test001.jpg"
+ * @example "2015jan-1.jpg"  with "test" as prefix becomes "test001.jpg"
+ * @example "2015jan-1a.jpg" with "test" as prefix becomes "test001a.jpg"
  * @param   string   $prefix Optional prefix to prepend to filename after renaming
  * @return  callable
  */
 function renameImageWithNumbering($prefix = '')
 {
     return function ($folder, $filename, $newFilename) use ($prefix) {
-        if (preg_match('/[^0-9]*([0-9]+)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
+        if (preg_match('/[^0-9]*([0-9]+)([^0-9\.]*)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
             $num = str_pad($matches[1], 3, '0', STR_PAD_LEFT);
-            $ext = $matches[2];
-            $newFilename = $num . $ext;
+            $suffix = $matches[2];
+            $ext = $matches[3];
+            $newFilename = $num . $suffix . $ext;
         }
 
         return $prefix . $newFilename;
