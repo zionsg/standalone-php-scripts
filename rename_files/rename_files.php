@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple script to rename files
+ * Simple script to rename files for uploading to web server
  *
  * @author Zion Ng <zion@intzone.com>
  * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/rename_files
@@ -11,6 +11,7 @@
  * Rename files in folder
  *
  * Subfolders are not processed.
+ * Filename is changed to lowercase, retaining only the following characters: alphanumeric, dash, underscore, period.
  *
  * @param  string   $folder         Absolute path
  * @param  callable $renameCallback Optional additional callback applied after in-built renaming.
@@ -46,19 +47,19 @@ function renameFiles($folder, $renameCallback = null)
 /**
  * Returns callback to rename image files with numbering
  *
- * @example "2015jan-1.jpg" becomes "001.jpg"
- * @param   string   $prefix Prefix to add to filename after renaming
+ * @example "2015jan-1.jpg" with "test" as prefix becomes "test001.jpg"
+ * @param   string   $prefix Optional prefix to prepend to filename after renaming
  * @return  callable
  */
-function renameImageWithNumbering($prefix)
+function renameImageWithNumbering($prefix = '')
 {
     return function ($folder, $filename, $newFilename) use ($prefix) {
         if (preg_match('/[^0-9]*([0-9]+)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
             $num = str_pad($matches[1], 3, '0', STR_PAD_LEFT);
             $ext = $matches[2];
-            $newFilename = $prefix . $num . $ext;
+            $newFilename = $num . $ext;
         }
 
-        return $newFilename;
+        return $prefix . $newFilename;
     };
 }
