@@ -23,7 +23,6 @@
  * @since  2013-11-06T19:00+08:00
  */
 
-
 include 'UrlToAbsolute/url_to_absolute.php';
 
 /**
