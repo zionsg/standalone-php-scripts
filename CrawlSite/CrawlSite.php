@@ -23,6 +23,7 @@
  * @since  2013-11-06T19:00+08:00
  */
 
+
 include 'UrlToAbsolute/url_to_absolute.php';
 
 /**
@@ -244,7 +245,12 @@ class CrawlSite
             $headers = explode("\n", substr($contents, 0, $headerSize));
             $contents = substr($contents, $headerSize);
             foreach ($headers as $header) {
-                list($key, $value) = array_map('trim', explode(':', $header, 2)); // limit to 2 tokens cos of http://
+                $headerArray = explode(':', $header, 2); // limit to 2 tokens cos of http://
+                if (false === $headerArray || count($headerArray) != 2) {
+                    continue;
+                }
+
+                list($key, $value) = array_map('trim', $headerArray);
                 if ('Location' == $key) {
                     $effectiveUrl = $value;
                     break;
@@ -524,6 +530,9 @@ class CrawlSite
     protected function renameUrl($url)
     {
         $parts = parse_url($url);
+        if (false === $parts || !isset($parts['path'])) {
+            return $url;
+        }
         $extension = pathinfo($parts['path'], PATHINFO_EXTENSION);
 
         // For non-webpages such as .css, .js, .jpg
