@@ -17,6 +17,8 @@
  * Result if formula is used in Excel:
  *     JohnSecondandNextInLineDoeADeer
  *
+ * @author Zion Ng <zion@intzone.com>
+ * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/getExcelSubstituteFormula
  * @param  string $textOrCellRef Text or cell reference to use in formula. Text can be a formula also.
  * @param  array  $words         Words to replace. If key is not specified, word will be replaced by "".
  * @param  string $finalFormulaTemplate Template for returning formula using %s as the placeholder.
