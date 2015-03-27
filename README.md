@@ -35,14 +35,20 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 - composer_browser<br />
   Run `composer install` in browser.
 
+- getExcelSubstituteFormula<br />
+  Generate Excel formula for substituting multiple words.
+
 - phpcsfixer_browser<br />
   Run PHP-CS-Fixer in browser (checking only, no fixing).
 
 - phpunit_browser<br />
   Run PHPUnit tests in browser.
 
+- pixel<br />
+  Output 1-pixel transparent GIF image.
+
 - rename_files<br />
   Rename files in folder especially images with numbering
 
-- show_database_scheame<br />
+- show_database_schema<br />
   List out all the tables in a database together with the column information
