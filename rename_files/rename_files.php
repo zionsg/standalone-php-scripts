@@ -62,6 +62,8 @@ function renameFiles($folder, $renameCallback = null)
  *
  * @example "2015jan-1.jpg"  with "test" as prefix becomes "test0001.jpg"
  * @example "2015jan-5678a.jpg" with "test" as prefix becomes "test5678a.jpg"
+ * @example "2015feb(24).jpg" with "test" as prefix becomes "test0024.jpg"
+ * @example "2015feb(24)b.jpg" with "test" as prefix becomes "test0024b.jpg"
  * @param   string   $prefix Optional prefix to prepend to filename after renaming
  * @param   int      $digits Optional number of digits for numbering
  * @return  callable
@@ -69,7 +71,7 @@ function renameFiles($folder, $renameCallback = null)
 function renameImageWithNumbering($prefix = '', $digits = 4)
 {
     return function ($folder, $filename, $newFilename) use ($prefix, $digits) {
-        if (preg_match('/[^0-9]*([0-9]+)([^0-9\.]*)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
+        if (preg_match('/[^0-9]*\(?([0-9]+)\)?([^0-9\.]*)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
             $num = str_pad($matches[1], $digits, '0', STR_PAD_LEFT);
             $suffix = $matches[2];
             $ext = $matches[3];
