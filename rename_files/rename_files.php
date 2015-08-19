@@ -7,8 +7,8 @@
  * @since  2015-01-29T08:00+08:00
  */
 
-// Change folder and prefix to run
-renameFiles('', renameImageWithNumbering(''));
+// Change folder, prefix and pad digits to run
+renameFiles('', renameImageWithNumbering('', 4));
 
 /**
  * Rename files in folder
@@ -60,10 +60,13 @@ function renameFiles($folder, $renameCallback = null)
 /**
  * Returns callback to rename image files with numbering
  *
- * @example "2015jan-1.jpg"  with "test" as prefix becomes "test0001.jpg"
- * @example "2015jan-5678a.jpg" with "test" as prefix becomes "test5678a.jpg"
- * @example "2015feb(24).jpg" with "test" as prefix becomes "test0024.jpg"
- * @example "2015feb(24)b.jpg" with "test" as prefix becomes "test0024b.jpg"
+ * Examples:
+ *   "2015jan-1.jpg"  with "test" as prefix becomes "test0001.jpg"
+ *   "2015jan-5678a.jpg" with "test" as prefix becomes "test5678a.jpg"
+ *   "2015feb(24).jpg" with "test" as prefix becomes "test0024.jpg"
+ *   "2015feb(24)b.jpg" with "test" as prefix becomes "test0024b.jpg"
+ *   "test0001.png" with no prefix and digits set to 2 becomes "01.png"
+ *
  * @param   string   $prefix Optional prefix to prepend to filename after renaming
  * @param   int      $digits Optional number of digits for numbering
  * @return  callable
@@ -72,7 +75,7 @@ function renameImageWithNumbering($prefix = '', $digits = 4)
 {
     return function ($folder, $filename, $newFilename) use ($prefix, $digits) {
         if (preg_match('/[^0-9]*\(?([0-9]+)\)?([^0-9\.]*)(\.[a-zA-Z]+)$/', $newFilename, $matches)) {
-            $num = str_pad($matches[1], $digits, '0', STR_PAD_LEFT);
+            $num = str_pad((int) $matches[1], $digits, '0', STR_PAD_LEFT);
             $suffix = $matches[2];
             $ext = $matches[3];
             $newFilename = $num . $suffix . $ext;
