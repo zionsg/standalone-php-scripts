@@ -15,6 +15,10 @@
  *     $params = array();
  *     print_r($instance($params));
  *
+ * Note: Some ports are listed as unsafe and blocked in Chrome.
+ *       List of ports - http://www-archive.mozilla.org/projects/netlib/PortBanning.html#portlist
+ *       How to unblock in Chrome - http://douglastarr.com/how-to-allow-unsafe-ports-in-chrome/
+ *
  * @author Zion Ng <zion@intzone.com>
  * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/VirtualHosts
  * @since  2012-11-14T23:50+08:00 zion.ng
