@@ -35,6 +35,9 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 - composer_browser<br />
   Run `composer install` in browser.
 
+- find_long_filenames<br />
+  Find long filenames in path.
+
 - getExcelSubstituteFormula<br />
   Generate Excel formula for substituting multiple words.
 
