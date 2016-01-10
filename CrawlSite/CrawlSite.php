@@ -9,7 +9,7 @@
  * After conversion, the following will need to be done manually:
  *   1) Remove XML tags from PHP files else they may not parse properly if short_tags are enabled
  *      Eg: <?xml version="1.0" encoding="utf-8"?>
- *   2) Convert the files to UTF-8 encoding with BOM. Bulk conversion can be done via the PythonScript plugin
+ *   2) Convert the files to UTF-8 encoding without BOM. Bulk conversion can be done via the PythonScript plugin
  *      in Notepad++. See https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite/npp_convert_utf8.py
  *
  * Usage:
