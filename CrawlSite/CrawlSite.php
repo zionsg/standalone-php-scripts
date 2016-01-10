@@ -18,6 +18,10 @@
  *     $links = $crawler('http://example.com/test/');
  *     echo '<pre>' . print_r($links, true) . '</pre>';
  *
+ * Helper functions:
+ *     addLinkType($tag, $attribute, $pattern) can be used to add additional link types to check. 
+ *     getLinkTypes() returns the link types that will be checked.
+ * 
  * @author Zion Ng <zion@intzone.com>
  * @link   [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/CrawlSite
  * @since  2013-11-06T19:00+08:00
