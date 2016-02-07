@@ -55,3 +55,6 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
 
 - show_database_schema<br />
   List out all the tables in a database together with the column information
+
+- split_sql_file<br />
+  Split large SQL database dump file into smaller parts
