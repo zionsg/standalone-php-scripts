@@ -46,24 +46,7 @@ function splitSqlFile($filename)
         throw new Exception("Could not create or write to {$partFolder}");
     }
 
-    // Read in MySQL information as 1st part
-    $partFilename = $getPartFilename(++$partCnt);
-    $partHandle = fopen($partFolder . '/' . $partFilename, 'wb');
-    while (!feof($handle)) { // read till /*! conditional-execution tokens
-        $line = fgets($handle);
-        fwrite($partHandle, $line);
-        if ('/*!' == substr($line, 0, 3)) {
-            break;
-        }
-    }
-    while (trim($line)) { // read till blank line
-        $line = fgets($handle);
-        fwrite($partHandle, $line);
-    }
-    fclose($partHandle);
-    echo $partFilename . '<br>';
-
-    // Each part will consist of a table schema or dump
+    // Each part will consist of conditional-execution tokens, table schema or dump
     while (!feof($handle)) {
         $partFilename = $getPartFilename(++$partCnt);
         $partHandle = fopen($partFolder . '/' . $partFilename, 'wb');
