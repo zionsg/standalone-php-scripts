@@ -2,6 +2,7 @@
 /**
  * Compare 2 arrays in both directions
  *
+ * @link   https://github.com/zionsg/standalone-php-scripts/tree/master/array_diff_key_recursive
  * @param  array  $arr1
  * @param  array  $arr2
  * @param  string $notInArray1Msg Message to use if key from $arr1 is not found in $arr2
@@ -45,7 +46,7 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
             // Recursion if value is an array
             if (array_values($value) === $value) {
                 // If numeric sequential array, ie. list of items, only check the first item
-                $arrayDiff = $fn($value[0], $arr2value[0], $diffMsg);
+                $arrayDiff = $fn([$value[0]], [$arr2value[0]], $diffMsg);
             } else {
                 // If associative array, compare full array
                 $arrayDiff = $fn($value, $arr2value, $diffMsg);
