@@ -32,6 +32,9 @@ In general, folders with names in `StudlyCaps` contain classes (OOP) while those
   Generate list and config for port-based virtual hosts on local development machine.
 
 **Procedural scripts**
+- array_diff_key_recursive<br />
+  Compare keys of 2 arrays recursively in both directions.
+
 - composer_browser<br />
   Run `composer install` in browser.
 

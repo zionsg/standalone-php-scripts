@@ -1,0 +1,13 @@
+{
+	"bothHave": "yes",
+	"onlyTwoHave": true,
+	"listOfItems": [{
+		"id": 1,
+		"name": "beta",
+        "onlyTwoHave": true
+	}],
+	"nestedObjectOrAssociativeArray": {
+		"bothHave": true,
+		"onlyTwoHave": 2
+	}
+}
