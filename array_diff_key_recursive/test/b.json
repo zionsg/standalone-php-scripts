@@ -1,7 +1,8 @@
 {
 	"bothHave": "yes",
 	"onlyTwoHave": true,
-	"listOfItems": [{
+    "simpleList": [],
+	"listOfObjectsOrArrays": [{
 		"id": 1,
 		"name": "beta",
         "onlyTwoHave": true

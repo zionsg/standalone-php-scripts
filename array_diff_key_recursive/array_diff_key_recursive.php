@@ -33,23 +33,23 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
                 continue;
             }
 
-            $arr2value = $arr2[$key];
-            if (!is_array($arr2value)) {
+            // Both keys must be non-empty arrays before considering recursion
+            $value2 = $arr2[$key];
+            if (!is_array($value2)) {
                 $diff[$key] = 'not an array';
                 continue;
             }
-            if (!count($arr2value)) {
-                $diff[$key] = 'empty array';
+            if (!$value || !$value2) {
                 continue;
             }
 
             // Recursion if value is an array
             if (array_values($value) === $value) {
                 // If numeric sequential array, ie. list of items, only check the first item
-                $arrayDiff = $fn([$value[0]], [$arr2value[0]], $diffMsg);
+                $arrayDiff = $fn([$value[0]], [$value2[0]], $diffMsg);
             } else {
                 // If associative array, compare full array
-                $arrayDiff = $fn($value, $arr2value, $diffMsg);
+                $arrayDiff = $fn($value, $value2, $diffMsg);
             }
 
             // Add key only if there is a difference in the nested arrays
@@ -64,5 +64,5 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
     $diff1 = compare_recursive($arr1, $arr2, $notInArray2Msg);
     $diff2 = compare_recursive($arr2, $arr1, $notInArray1Msg);
 
-    return array_merge_recursive($diff1, $diff2);
+    return array_replace_recursive($diff1, $diff2);
 }
