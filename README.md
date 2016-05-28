@@ -4,6 +4,7 @@ Standalone PHP Scripts
 In general, folders with names in `StudlyCaps` contain classes (OOP) while those in lowercase contain procedural scripts.
 
 **Usage**
+
 To clone just a folder, follow these steps taken from a [StackOverflow post](http://stackoverflow.com/questions/600079/is-there-any-way-to-clone-a-git-repositorys-sub-directory-only/28039894#28039894):
 ```
 mkdir <repo>
