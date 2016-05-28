@@ -1,18 +1,18 @@
 <?php
 /**
- * Compare 2 arrays in both directions
+ * Compare keys of 2 arrays recursively in both directions
  *
  * @link   https://github.com/zionsg/standalone-php-scripts/tree/master/array_diff_key_recursive
  * @param  array  $arr1
  * @param  array  $arr2
- * @param  string $notInArray1Msg Message to use if key from $arr1 is not found in $arr2
+ * @param  string $notInArray2Msg Message to use if key from $arr1 is not found in $arr2
  * @param  string $notInArray1Msg Message to use if key from $arr2 is not found in $arr1
  * @return array
  */
 function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'missing', $notInArray1Msg = 'extra')
 {
     /**
-     * Internal function used to compare both arrays in 1 direction
+     * Internal function used to compare keys of both arrays recursively in 1 direction
      *
      * @param  array  $arr1
      * @param  array  $arr2
