@@ -1,17 +1,17 @@
 {
 	"bothHave": true,
-	"onlyOneHave": 1,
+	"onlyAlphaHave": 1,
     "simpleList": ["a", 1],
 	"listOfObjectsOrArrays": [{
 		"id": 1,
-		"name": "alpha",
-		"onlyOneHave": true
+		"name": "one",
+		"onlyAlphaHave": true
 	}, {
 		"id": 2,
-		"name": "beta"
+		"name": "two"
 	}],
 	"nestedObjectOrAssociativeArray": {
 		"bothHave": "yes",
-		"onlyOneHave": "true"
+		"onlyAlphaHave": "true"
 	}
 }

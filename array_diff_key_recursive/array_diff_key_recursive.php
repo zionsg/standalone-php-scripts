@@ -19,8 +19,8 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
      * @param  string $diffMsg Message to use if key from $arr1 is not found in $arr2
      * @return array
      */
-    function compare_recursive(array $arr1, array $arr2, $diffMsg) {
-        $fn = __FUNCTION__;
+    $compare_recursive = function (array $arr1, array $arr2, $diffMsg) use (&$compare_recursive) {
+        $fn = $compare_recursive;
         $diff = [];
 
         foreach ($arr1 as $key => $value) {
@@ -45,7 +45,7 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
 
             // Recursion if value is an array
             if (array_values($value) === $value) {
-                // If numeric sequential array, ie. list of items, only check the first item
+                // If numerically sequential array, ie. list of items, only check the first item
                 $arrayDiff = $fn([$value[0]], [$value2[0]], $diffMsg);
             } else {
                 // If associative array, compare full array
@@ -53,16 +53,16 @@ function array_diff_key_recursive(array $arr1, array $arr2, $notInArray2Msg = 'm
             }
 
             // Add key only if there is a difference in the nested arrays
-            if (count($arrayDiff)) {
+            if ($arrayDiff) {
                 $diff[$key] = $arrayDiff;
             }
         }
 
         return $diff;
-    }
+    };
 
-    $diff1 = compare_recursive($arr1, $arr2, $notInArray2Msg);
-    $diff2 = compare_recursive($arr2, $arr1, $notInArray1Msg);
+    $diff1 = $compare_recursive($arr1, $arr2, $notInArray2Msg);
+    $diff2 = $compare_recursive($arr2, $arr1, $notInArray1Msg);
 
     return array_replace_recursive($diff1, $diff2);
 }

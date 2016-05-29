@@ -1,14 +1,14 @@
 {
 	"bothHave": "yes",
-	"onlyTwoHave": true,
+	"onlyBetaHave": true,
     "simpleList": [],
 	"listOfObjectsOrArrays": [{
 		"id": 1,
-		"name": "beta",
-        "onlyTwoHave": true
+		"name": "three",
+        "onlyBetaHave": true
 	}],
 	"nestedObjectOrAssociativeArray": {
 		"bothHave": true,
-		"onlyTwoHave": 2
+		"onlyBetaHave": 2
 	}
 }
