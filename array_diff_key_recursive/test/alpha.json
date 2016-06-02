@@ -1,17 +1,17 @@
 {
-	"bothHave": true,
-	"onlyAlphaHave": 1,
+    "bothHave": true,
+    "onlyAlphaHave": 1,
     "simpleList": ["a", 1],
-	"listOfObjectsOrArrays": [{
-		"id": 1,
-		"name": "one",
-		"onlyAlphaHave": true
-	}, {
-		"id": 2,
-		"name": "two"
-	}],
-	"nestedObjectOrAssociativeArray": {
-		"bothHave": "yes",
-		"onlyAlphaHave": "true"
-	}
+    "listOfObjectsOrArrays": [{
+        "id": 1,
+        "name": "one",
+        "onlyAlphaHave": true
+    }, {
+        "id": 2,
+        "name": "two"
+    }],
+    "nestedObjectOrAssociativeArray": {
+        "bothHave": "yes",
+        "onlyAlphaHave": "true"
+    }
 }
