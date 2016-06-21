@@ -18,14 +18,13 @@ function array_reduce_lists_recursive(array $arr)
             continue;
         }
 
-        // If numerically sequential array, ie. list of items, keep only the first item (if any)
         if (array_values($value) === $value) {
-            $result[$key] = array_slice($value, 0, 1);
-            continue;
+            // If numerically sequential array, ie. list of items, process only the first item
+            $result[$key] = $fn(array_slice($value, 0, 1));
+        } else {
+            // Process full array
+            $result[$key] = $fn($value);
         }
-
-        // Recursive call for associative arrays
-        $result[$key] = $fn($value);
     }
 
     return $result;

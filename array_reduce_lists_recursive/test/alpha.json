@@ -1,19 +1,26 @@
 {
-    "key": "value",
-    "emptyList": [],
-    "simpleList": ["a", 1, "b", 2],
-    "listOfObjectsOrArrays": [{
-        "id": 1,
-        "name": "one"
+  "key": "value",
+  "emptyList": [],
+  "simpleList": ["a", 1, "b", 2],
+  "listOfObjectsOrArrays": [{
+    "id": 1,
+    "name": "one"
+  }, {
+    "id": 2,
+    "name": "two"
+  }, {
+    "id": 3,
+    "name": "three"
+  }],
+  "object": {
+    "is_object": true,
+    "listOfObjectsWithNestedLists": [{
+      "id": 4,
+      "nestedList": [16, 12, 8, 4]
     }, {
-        "id": 2,
-        "name": "two"
-    }, {
-        "id": 3,
-        "name": "three"
-    }],
-    "nestedObjectOrAssociativeArray": {
-        "nested": true,
-        "nestedList": [4, 3, 2, 1]
-    }
+      "id": 5,
+      "nestedList": [20, 15, 10, 5]
+    }]
+
+  }
 }
