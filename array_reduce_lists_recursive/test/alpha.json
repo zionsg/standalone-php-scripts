@@ -1,0 +1,19 @@
+{
+    "key": "value",
+    "emptyList": [],
+    "simpleList": ["a", 1, "b", 2],
+    "listOfObjectsOrArrays": [{
+        "id": 1,
+        "name": "one"
+    }, {
+        "id": 2,
+        "name": "two"
+    }, {
+        "id": 3,
+        "name": "three"
+    }],
+    "nestedObjectOrAssociativeArray": {
+        "nested": true,
+        "nestedList": [4, 3, 2, 1]
+    }
+}

@@ -48,6 +48,9 @@ git pull --depth=1 origin master
 - array_diff_key_recursive<br />
   Compare keys of 2 arrays recursively in both directions.
 
+- array_reduce_lists_recursive<br />
+  Reduce lists in an array to 1 element each recursively.
+
 - composer_browser<br />
   Run `composer install` in browser.
 
