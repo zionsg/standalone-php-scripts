@@ -60,6 +60,9 @@ git pull --depth=1 origin master
 - getExcelSubstituteFormula<br />
   Generate Excel formula for substituting multiple words.
 
+- getMacIpFromArp<br />
+  Get MAC addresses and their IPv4 addresses from `arp -a` output
+
 - phpcsfixer_browser<br />
   Run PHP-CS-Fixer in browser (checking only, no fixing).
 
