@@ -1,7 +1,8 @@
 Standalone PHP Scripts
 ======================
 
-In general, folders with names in `StudlyCaps` contain classes (OOP) while those in lowercase contain procedural scripts.
+In general, folders with names in `StudlyCaps` contain classes (OOP) while those in lowercase/camelCase contain
+functions or procedural scripts.
 
 **Usage**
 

@@ -2,6 +2,7 @@
   "key": "value",
   "emptyList": [],
   "simpleList": ["a", 1, "b", 2],
+
   "listOfObjectsOrArrays": [{
     "id": 1,
     "name": "one"
@@ -12,6 +13,7 @@
     "id": 3,
     "name": "three"
   }],
+
   "object": {
     "is_object": true,
     "listOfObjectsWithNestedLists": [{
@@ -21,6 +23,5 @@
       "id": 5,
       "nestedList": [20, 15, 10, 5]
     }]
-
   }
 }
