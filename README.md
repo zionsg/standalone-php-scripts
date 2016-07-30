@@ -76,6 +76,9 @@ git pull --depth=1 origin master
 - rename_files<br />
   Rename files in folder especially images with numbering
 
+- replacePlaceholders<br />
+  Replace placeholders in format string with variable values
+
 - show_database_schema<br />
   List out all the tables in a database together with the column information
 
