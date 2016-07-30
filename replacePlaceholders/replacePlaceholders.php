@@ -40,9 +40,9 @@ function replacePlaceholders(array $data, string $format, array $context, array 
             },
 
             'pad' => function (string $varName, $value, array $context, array $args) {
-                $str = $args[0] ?? ' ';
-                $len = $args[1] ?? 0;
-                $align = $args[2] ?? '';
+                $len = $args[0] ?? 0;
+                $str = $args[1] ?? ' ';
+                $align = $args[2] ?? 'right';
                 $align = ('left' === $align) ? STR_PAD_LEFT : STR_PAD_RIGHT;
 
                 return str_pad($value, $len, $str, $align);
@@ -72,10 +72,7 @@ function replacePlaceholders(array $data, string $format, array $context, array 
         $fnName = $parts[0] ?? '';
         $args = array_slice($parts, 1);
 
-        if (! array_key_exists($varName, $data)) {
-            continue;
-        }
-
+        // Apply function
         $fn = $functions[$fnName] ?? null;
         $value = $data[$varName] ?? '';
         if (is_callable($fn)) {

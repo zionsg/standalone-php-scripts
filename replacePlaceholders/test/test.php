@@ -16,7 +16,7 @@ $data = [
 ];
 
 $context = [
-    'class' => "Name: *{name}*\nSize: {{pad_0_3_left:size}}\n\n",
+    'class' => "Name: *{name}*\nSize: {{pad_3_ _left:size}}\n\n",
 ];
 
 $format = <<< 'EOD'
