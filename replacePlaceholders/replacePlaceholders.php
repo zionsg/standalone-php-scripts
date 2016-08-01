@@ -40,7 +40,7 @@ function replacePlaceholders(array $data, string $format, array $context, array 
     if (null === $functions) {
         $functions = [
             'pad' => function (string $varName, $value, array $context, array $args) {
-                $len = $args[0] ?? 0;
+                $len = (int) ($args[0] ?? 0);
                 $str = $args[1] ?? ' ';
                 $type = $args[2] ?? 'right';
                 $type = ('both' === $type)
