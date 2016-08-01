@@ -5,7 +5,7 @@
  * Supported placeholders:
  *   {variableName} This will be replaced by $data['variableName']
  *   {{function:variableName}} This will be replaced by applying the function on $data['variableName']
- *   {{function_arg1_arg2:variablName}} Arguments can be passed into the function via underscores
+ *   {{function_arg1_arg2:variableName}} Arguments can be passed into the function via underscores
  *
  * Supported functions if $functions not provided:
  *   {{loop_rowname:rows}} Iterates over rows using $context['rowname'] as format string for each row
