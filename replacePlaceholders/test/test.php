@@ -2,7 +2,8 @@
 include '../replacePlaceholders.php';
 
 $data = [
-    'title' => 'Test Classes',
+    'title' => 'Test Title',
+
     'classes' => [
         [
             'name' => '4A',
@@ -13,16 +14,25 @@ $data = [
             'size' => 35,
         ],
     ],
-];
 
-$context = [
-    'class' => "Name: *{name}*\nSize: {{pad_3_ _left:size}}\n\n",
+    'object' => [
+        'id' => 1,
+        'name' => 'My Object',
+    ],
 ];
 
 $format = <<< 'EOD'
 {title}
-
 {{loop_class:classes}}
+{{loop_keyValueRow_counter_keyvalue:object}}
+{{loop_forRow_oneBasedIndex_for_1_5:_}}
 EOD;
+
+$context = [
+    'counter' => 1000, // this will be overridden in the loops where counterName is "counter"
+    'class' => "\nName: *{name}*\nSize: {{pad_3_0_left:size}}\n",
+    'keyValueRow' => "{{pad_4_ _right:key}} = {value}\n",
+    'forRow' => "Counter: {oneBasedIndex}\n",
+];
 
 printf('<pre>%s</pre>', replacePlaceholders($data, $format, $context));
