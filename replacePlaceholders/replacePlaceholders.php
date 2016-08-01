@@ -9,7 +9,7 @@
  *
  * Supported functions if $functions not provided:
  *   {{loop_rowname:rows}} Iterates over rows using $context['rowname'] as format string for each row
- *   {{pad_str_len_align:variable}} Pads variable to len using str based on align (either left or right)
+ *   {{pad_str_len_type:variable}} Pads variable to len using str based on pad type (left, right, both)
  *
  * @link   https://github.com/zionsg/standalone-php-scripts/tree/master/replacePlaceholders
  * @param  array  $data      Variable-value pairs
@@ -42,10 +42,12 @@ function replacePlaceholders(array $data, string $format, array $context, array 
             'pad' => function (string $varName, $value, array $context, array $args) {
                 $len = $args[0] ?? 0;
                 $str = $args[1] ?? ' ';
-                $align = $args[2] ?? 'right';
-                $align = ('left' === $align) ? STR_PAD_LEFT : STR_PAD_RIGHT;
+                $type = $args[2] ?? 'right';
+                $type = ('both' === $type)
+                      ? STR_PAD_BOTH
+                      : ('left' === $type ? STR_PAD_LEFT : STR_PAD_RIGHT); // right by default
 
-                return str_pad($value, $len, $str, $align);
+                return str_pad($value, $len, $str, $type);
             },
         ];
     }
