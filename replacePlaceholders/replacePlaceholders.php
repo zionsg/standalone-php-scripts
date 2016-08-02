@@ -12,7 +12,7 @@
  *
  * Supported functions if $functions not provided (all args are optional - see $functions in code for assumed defaults):
  *   {{pad_str_len_type:variableName}}
- *       Pads $data['variable'] to len using str based on pad type (left, right, both)
+ *       Pads $data['variableName'] to len using str based on pad type (left, right, both)
  *   {{loop_rowName_counterName_type_start_end:rows}}
  *       Iterates over $data['rows'] using $context['rowName'] as format string for each row, {counterName} as
  *       placeholder in row format string for loop counter. The loop counter begins from 1 and
@@ -47,7 +47,7 @@ function replacePlaceholders(array $data, string $format, array $context, array 
                       ? STR_PAD_BOTH
                       : ('left' === $type ? STR_PAD_LEFT : STR_PAD_RIGHT); // right by default
 
-                return str_pad($value, $len, $str, $type);
+                return str_pad($value . '', $len, $str, $type); // value must be cast to string - integers will not work
             },
 
             'loop' => function (string $varName, $value, array $context, array $args) use ($me) {
