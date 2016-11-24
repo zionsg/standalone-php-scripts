@@ -227,6 +227,10 @@ class TextToCalendar
      */
     public function __construct()
     {
+        if (! class_exists(PHPExcel_Settings::getZipClass())) {
+            PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP); // this is needed if no ZipArchive class is found
+        }
+        
         $this->workbook = new PHPExcel();
         $this->sheet = $this->workbook->getSheet(0);
     }
@@ -428,10 +432,10 @@ class TextToCalendar
     {
         // Configure style and page setup
         $this->sheet->getDefaultStyle()->applyFromArray(array(
-			'alignment' => array(
-				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
                 'vertical' => PHPExcel_Style_Alignment::VERTICAL_TOP,
-			),
+            ),
             'font' => array(
                 'name' => $details['Font Name'],
                 'size' => $details['Font Size'],
