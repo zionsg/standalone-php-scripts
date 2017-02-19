@@ -91,9 +91,9 @@ class CompareDatabases
                 printf("Different columns: %s\n", json_encode($diffCols));
             }
 
-            // Rows for both tables
-            $table1Rows = $table1Info['rows'];
-            $table2Rows = $table2Info['rows'];
+            // Rows for both tables - retrieve only as needed to reduce memory usage
+            $table1Rows = $this->getRows($db1, $table1);
+            $table2Rows = $this->getRows($db2, $table1);
             $diffIds = $this->getDiffKeys($table1Rows, $table2Rows);
             $hasChanges = $diffIds[self::RESULT];
 
@@ -138,7 +138,7 @@ class CompareDatabases
             }
             if ($updatedIds) {
                 $this->printColor(self::COLOR_UPDATED, sprintf(
-                    "Updated ids: %s\nUpdated rows (changes btw dbs):%s\n",
+                    "Updated ids: %s\nUpdated rows (changes btw dbs): %s\n",
                     json_encode($updatedIds),
                     json_encode($updatedRows)
                 ));
@@ -210,7 +210,6 @@ class CompareDatabases
             $table = $row['TABLE_NAME'];
             $result[$table] = [
                 'columns' => $this->getColumns($database, $table),
-                'rows' => $this->getRows($database, $table),
             ];
         }
 
