@@ -18,6 +18,9 @@ git pull --depth=1 origin master
 ```
 
 **Classes**
+- CompareDatabases<br />
+  Compare columns and rows between 2 databases.
+
 - CrawlSite<br />
   Crawl website using downwards traversal only.
 
