@@ -171,7 +171,7 @@ class CompareDatabases
                     }
                     foreach ($diff[self::INSERTED] as $column) {
                         $value2 = $row2[$column];
-                        $updatedCols[$column] = [$db1 => $value1, $db2 => $value2];
+                        $updatedCols[$column] = [$db1 => null, $db2 => $value2];
                     }
                     $updatedRows[$id] = $updatedCols;
                 }
