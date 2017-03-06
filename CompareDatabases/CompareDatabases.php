@@ -69,7 +69,23 @@ class CompareDatabases
         // Check if tables are the same
         $diffKeys = $this->getDiffKeys($info[$db1], $info[$db2]);
         if ($diffKeys[self::RESULT]) {
-            printf("Different tables between both databases: %s\n\n", json_encode($diffKeys));
+            $diffTables = $diffKeys[self::DELETED];
+            $deletedTablesStr =
+                $diffTables
+                ? $this->printColor(self::COLOR_DELETED, sprintf("  Deleted tables: %s\n", json_encode($diffTables)))
+                : '';
+
+            $diffTables = $diffKeys[self::INSERTED];
+            $insertedTablesStr =
+                $diffTables
+                ? $this->printColor(self::COLOR_INSERTED, sprintf("  Inserted tables: %s\n", json_encode($diffTables)))
+                : '';
+
+            printf(
+                "<i>DIFFERENT</i> tables between both databases:\n%s%s\n",
+                $deletedTablesStr,
+                $insertedTablesStr
+            );
         }
 
         // Go thru each table in db1 and compare with corresponding table in db2
@@ -86,9 +102,25 @@ class CompareDatabases
             }
 
             // Check if columns are the same in both tables
-            $diffCols = $this->getDiff($table1Info['columns'], $table2Info['columns']);
-            if ($diffCols[self::RESULT]) {
-                printf("Different columns: %s\n", json_encode($diffCols));
+            $diff = $this->getDiff($table1Info['columns'], $table2Info['columns']);
+            if ($diff[self::RESULT]) {
+                $diffCols = $diff[self::DELETED];
+                $deletedColsStr =
+                    $diffCols
+                    ? $this->printColor(self::COLOR_DELETED, sprintf("  Deleted columns: %s\n", json_encode($diffCols)))
+                    : '';
+
+                $diffCols = $diff[self::INSERTED];
+                $insertedColsStr = (! $diffCols) ? '' : $this->printColor(
+                    self::COLOR_INSERTED,
+                    sprintf("  Inserted columns: %s\n", json_encode($diffCols))
+                );
+
+                printf(
+                    "<i>DIFFERENT</i> columns:\n%s%s",
+                    $deletedColsStr,
+                    $insertedColsStr
+                );
             }
 
             // Rows for both tables - retrieve only as needed to reduce memory usage
@@ -99,7 +131,7 @@ class CompareDatabases
 
             // Show removed rows
             if ($diffIds[self::DELETED]) {
-                $this->printColor(self::COLOR_DELETED, sprintf(
+                echo $this->printColor(self::COLOR_DELETED, sprintf(
                     "Deleted ids: %s\nDeleted rows: %s\n",
                     json_encode($diffIds[self::DELETED]),
                     json_encode($this->getRowsForIds($diffIds[self::DELETED], $table1Rows))
@@ -108,7 +140,7 @@ class CompareDatabases
 
             // Show inserted rows
             if ($diffIds[self::INSERTED]) {
-                $this->printColor(self::COLOR_INSERTED, sprintf(
+                echo $this->printColor(self::COLOR_INSERTED, sprintf(
                     "Inserted ids: %s\nInserted rows: %s\n",
                     json_encode($diffIds[self::INSERTED]),
                     json_encode($this->getRowsForIds($diffIds[self::INSERTED], $table2Rows))
@@ -128,16 +160,24 @@ class CompareDatabases
                     // Find out what was updated
                     $updatedCols = [];
                     foreach ($row1 as $column => $value1) {
-                        $value2 = $row2[$column];
-                        if ($value2 != $value1) {
-                            $updatedCols[$column] = [$db1 => $value1, $db2 => $value2];
+                        if (in_array($column, $diff[self::DELETED])) {
+                            $updatedCols[$column] = [$db1 => $value1, $db2 => null];
+                        } else {
+                            $value2 = $row2[$column] ?? null;
+                            if ($value2 != $value1) {
+                                $updatedCols[$column] = [$db1 => $value1, $db2 => $value2];
+                            }
                         }
+                    }
+                    foreach ($diff[self::INSERTED] as $column) {
+                        $value2 = $row2[$column];
+                        $updatedCols[$column] = [$db1 => $value1, $db2 => $value2];
                     }
                     $updatedRows[$id] = $updatedCols;
                 }
             }
             if ($updatedIds) {
-                $this->printColor(self::COLOR_UPDATED, sprintf(
+                echo $this->printColor(self::COLOR_UPDATED, sprintf(
                     "Updated ids: %s\nUpdated rows (changes btw dbs): %s\n",
                     json_encode($updatedIds),
                     json_encode($updatedRows)
@@ -155,7 +195,7 @@ class CompareDatabases
 
     protected function printColor($colorCode, $text)
     {
-        printf('<div style="color:%s;">%s</div>', $colorCode, $text);
+        return sprintf('<div style="color:%s;">%s</div>', $colorCode, $text);
     }
 
     protected function getRowsForIds($ids, $rows)
