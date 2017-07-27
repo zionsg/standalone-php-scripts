@@ -49,6 +49,9 @@ git pull --depth=1 origin master
   Generate list and config for port-based virtual hosts on local development machine.
 
 **Procedural scripts**
+- alignText<br />
+  Align text in columns.
+
 - array_diff_key_recursive<br />
   Compare keys of 2 arrays recursively in both directions.
 
