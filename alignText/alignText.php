@@ -9,30 +9,30 @@
  */
 function alignText($text, $columnDelimiter = '|')
 {
-    $rows = explode("\n", $text);
+    $rows = [];
     $maxWidthForColumns = [];
 
     // Calculate max width per column
-    foreach ($rows as $row) {
-        $cols = array_map('trim', explode($columnDelimiter, $row));
+    $lines = explode("\n", $text);
+    foreach ($lines as $line) {
+        $cols = array_map('trim', explode($columnDelimiter, $line));
         $colCnt = count($cols);
+        $rows[] = $cols;
 
-        for ($i = 0; $i < $colCnt; $i++) {
-            $col = $cols[$i];
+        foreach ($cols as $i => $col) {
             $maxWidthForColumns[$i] = max(strlen($col), $maxWidthForColumns[$i] ?? 0);
         }
     }
 
     // Generate aligned text
-    $result = '';
+    $result = [];
     foreach ($rows as $row) {
-        $cols = explode($columnDelimiter, $row);
-        array_walk($cols, function (&$val, $key) use ($maxWidthForColumns) {
-            $val = str_pad(trim($val), $maxWidthForColumns[$key] ?? 0, ' ', STR_PAD_RIGHT);
+        array_walk($row, function (&$val, $key) use ($maxWidthForColumns) {
+            $val = ('' === $val ? '' : str_pad($val, $maxWidthForColumns[$key] ?? 0, ' ', STR_PAD_RIGHT));
         });
 
-        $result .= implode(" {$columnDelimiter} ", $cols) . "\n";
+        $result[] = implode(" {$columnDelimiter} ", $row);
     }
 
-    return $result;
+    return implode("\n", $result);
 }
