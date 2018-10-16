@@ -10,30 +10,37 @@
 $start = microtime(true);
 $ans = permutate(range('a', 'z'), 2);
 printf(
-    "<pre>%.3f secs to compute %d permutations:\n\n%s</pre>",
+    "<pre>%.6f secs to compute %d permutations:\n\n%s</pre>",
     microtime(true) - $start,
     count($ans),
     implode("\n", $ans)
 );
 
 /**
- * Generate permutations of a fixed length given a list of characters
+ * Generate permutations given a list of characters
  *
  * @example permutate(range('a', 'b'), 2) will return ['aa', 'ab', 'ba', 'bb']
- * @param  array $chars
- * @param  int $length Length of each permutation
+ * @param array $chars
+ * @param int $length Length of each permutation
+ * @param array $prevResult Used internally by function to pass result of previous iteration.
  * @return array
  */
-function permutate(array $chars, $length) {
-    $result = [];
-    $charCount = count($chars);
+function permutate(array $chars, $length, array $prevResult = []) {
+    if (0 === $length) {
+        return $prevResult;
+    }
 
-    $permutations = (2 === $length) ? $chars : permutate($chars, $length - 1);
-    for ($i = 0; $i < $charCount; $i++) {
-        foreach ($permutations as $p) {
-            $result[] = $chars[$i] . $p;
+    if (! $prevResult) {
+        $result = $chars;
+    } else {
+        $result = [];
+
+        foreach ($prevResult as $prev) {
+            foreach ($chars as $char) {
+                $result[] = $prev . $char;
+            }
         }
     }
 
-    return $result;
+    return permutate($chars, $length - 1, $result);
 }
