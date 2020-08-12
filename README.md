@@ -18,6 +18,10 @@ git pull --depth=1 origin master
 ```
 
 **Classes**
+- BitbucketApi<br>
+  Get list of all repositories in Bitbucket workspace, together with access keys, pipeline SSH keys
+  and repository variables.
+
 - CompareDatabases<br>
   Compare columns and rows between 2 databases.
 
