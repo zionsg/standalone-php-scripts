@@ -37,6 +37,9 @@ git pull --depth=1 origin master
 - InlineImages<br>
   Get url content and replace images with inline images.
 
+- JiraTitles<br>
+  Convert issue numbers in text to JIRA issue keys and titles.
+
 - ReplaceShortTags<br>
   Reads PHP file and replaces short tags
 
