@@ -4,7 +4,7 @@
  *
  * Usage (see __construct() docblock for required permissions):
  *     $api = new BitbucketApi($username, $password, $workspace);
- *     $repos = $this->getRepositories();
+ *     $repos = $api->getRepositories();
  *     echo json_encode($repos, JSON_PRETTY_PRINT);
  */
 class BitbucketApi
@@ -175,5 +175,4 @@ class BitbucketApi
 
         return $result;
     }
-
 }
