@@ -1,6 +1,7 @@
 <?php
 /**
- * List all repositories in a Bitbucket workspace, together with access keys, pipeline SSH keys and repository variables
+ * List all repositories in a Bitbucket workspace, together with access keys, pipeline SSH keys, repository variables
+ * and dates (YYYY-MM-DD format) from CHANGELOG.md in root of repositories (if any)
  *
  * Usage (see __construct() docblock for required permissions):
  *     $api = new BitbucketApi($username, $password, $workspace);
@@ -27,6 +28,9 @@ class BitbucketApi
      * @param string $username Bitbucket username
      * @param string $password Bitbucket password. Use app password if 2FA is enabled on account - must have
      *                         admin and read permissions on repositories, plus read permissions on all other resources.
+     *                         Login to bitbucket.org, click on Profile at bottom left-hand corner, Personal settings,
+     *                         App passwords, Create app password (choose all permissions containing "Read" and add
+     *                         "Admin" permission for Repositories in order to read access keys).
      */
     public function __construct($username, $password, $workspace)
     {
