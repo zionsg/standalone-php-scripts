@@ -83,6 +83,16 @@ class BitbucketApi
             $knownHosts = $this->call("{$slugUrl}/pipelines_config/ssh/known_hosts/", 'hostname');
             $variables = $this->call("{$slugUrl}/pipelines_config/variables/", ['key', 'value', 'secured']);
 
+            // Look for CHANGELOG.md in root of repository and retrieve YYYY-MM-DD dates
+            // Cannot use search function on Bitbucket website cos it strips out "-" from search terms
+            $changelog = $this->call("{$slugUrl}/src/master/CHANGELOG.md", [], false); // not JSON
+            $changelogDates = [];
+            if ($changelog && !isset($changelog[self::KEY_ERRORS])) {
+                $matches = [];
+                preg_match_all('/(\d{4}\-\d{2}\-\d{2})/', $changelog[0], $matches, PREG_PATTERN_ORDER);
+                $changelogDates = $matches[1];
+            }
+
             $result[$slug] = [
                 'accessKeys' => $deployKeys,
                 'pipelinesConfig' => [
@@ -92,6 +102,7 @@ class BitbucketApi
                     ],
                     'variables' => $variables,
                 ],
+                'changelogDates' => $changelogDates,
             ];
         }
 
@@ -112,9 +123,10 @@ class BitbucketApi
      * @param string $endpointUrl Endpoint url without host, e.g. /2.0/repositories
      * @param string|array $extractKeys Optional list of keys to extract from "values" key in responses.
      *                                  If not specified, all keys are extracted.
+     * @param bool $isJson Default=true. Whether response from endpoint is in JSON.
      * @return array Concatenation of values for keys from "values" key in paginated responses
      */
-    protected function call($endpointUrl, $extractKeys = [])
+    protected function call($endpointUrl, $extractKeys = [], $isJson = true)
     {
         $extractKeys = is_array($extractKeys) ? $extractKeys : [$extractKeys];
         $isSingleExtractKey = (1 === count($extractKeys));
@@ -127,7 +139,8 @@ class BitbucketApi
         while (true) {
             $endpointUrlForPage = "{$endpointUrl}?page={$currentPage}";
             curl_setopt($this->curlHandler, CURLOPT_URL, "{$this->bitbucketHost}{$endpointUrlForPage}");
-            $response =  json_decode(curl_exec($this->curlHandler), true) ?: [];
+            $curlResult = curl_exec($this->curlHandler);
+            $response =  json_decode($curlResult, true) ?: [];
 
             // Check if error response
             $error = $response['error'] ?? [];
@@ -142,6 +155,9 @@ class BitbucketApi
             }
 
             // Append "values" key to result
+            if (!$isJson) {
+                $result[] = $curlResult;
+            }
             foreach (($response['values'] ?? []) as $value) {
                 if ($isSingleExtractKey) {
                     $extractKey = $extractKeys[0];
