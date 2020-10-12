@@ -3,6 +3,8 @@
  * List all repositories in a Bitbucket workspace, together with access keys, pipeline SSH keys, repository variables
  * and dates (YYYY-MM-DD format) from CHANGELOG.md in root of repositories (if any)
  *
+ * Takes about 10 mins to comb thru 220 repositories.
+ *
  * Usage (see __construct() docblock for required permissions):
  *     $api = new BitbucketApi($username, $password, $workspace);
  *     $repos = $api->getRepositories();
