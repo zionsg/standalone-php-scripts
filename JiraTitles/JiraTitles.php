@@ -3,14 +3,21 @@
  * Convert issue numbers in text to JIRA issue keys and titles
  *
  * Notes:
- *   - Numbers starting with "j" will be treated as JIRA issue numbers. A prefix is required to
- *     prevent confusion with other numbers used for currency and time.
- *   - The text "Status of j123: Done" converts to "Status of [MYBOARD-123 My Issue]: Done".
+ *   - Different prefixes can be used to correspond to different JIRA project boards,
+ *     e.g. t123 can correspond to issue TECH-123, while b456 corresponds to issue BIZ-456.
+ *   - A prefix is required to prevent confusion with other numbers used for currency and time.
+ *   - E.g. the text "Status of j123: Done" converts to "Status of [MYBOARD-123 My Issue]: Done".
+ *   - Note that if any issue number is invalid, the rest of the issue numbers will not
+ *     be converted as the JIRA API will return an error response even if the other issues are valid.
  *
  * Usage (see __construct() docblock on username and password):
  *     $app = new JiraTitles($username, $password);
  *     $text = file_get_contents('daily-standup-minutes.txt');
- *     echo $app->convert($text, 'MYPROJECT', 'MYBOARD');
+ *     $prefixes = [ // value of "board" key assumed to be same as "project" key if unspecified
+ *         't' => ['project' => 'TECH', 'board' => 'TECH'], // e.g. converts t123 to TECH-123
+ *         'b' => ['project' => 'BIZ', 'board' => 'BIZ'],   // e.g. converts b456 to BIZ-456
+ *     ];
+ *     echo $app->convert($text, $prefixes);
  *
  * @link https://github.com/zionsg/standalone-php-scripts/blob/master/JiraTitles/JiraTitles.php
  */
@@ -55,70 +62,104 @@ class JiraTitles
     /**
      * Convert issue numbers to JIRA issue keys and titles
      *
+     * Note that if any issue number is invalid, the rest of the issue numbers will not
+     * be converted as the JIRA API will return an error response even if the other issues are valid.
+     *
      * @param string $inputText
+     * @param array $prefixes [<prefix> => ['project' => <projectName>, 'board' => <boardName]]
      * @param string $projectName JIRA project
      * @param string $boardName JIRA board
-     * @return string Text with issue numbers converted
+     * @return string Text with issue numbers converted. If issues are not found or there are
+     *                errors, error messages will be prepended to the text.
      */
-    public function convert($inputText, $projectName, $boardName)
+    public function convert($inputText, $prefixes)
     {
-        // Find JIRA issue numbers
-        $pattern = '/(j\d+)/';
-        $matches = [];
-        if (!preg_match_all($pattern, $inputText, $matches, PREG_PATTERN_ORDER)) {
-            return 'No JIRA issue numbers found.';
-        }
-        $issueNumbersWithPrefix = array_unique($matches[1]); // must filter out duplicates
-        $issueNumbers = array_map( // remove "j"
-            function ($val) {
-                return str_replace('j', '', $val);
-            },
-            $issueNumbersWithPrefix
-        );
+        $outputText = $inputText;
 
-        // Form url to JIRA API endpoint. Issue keys are numbers prefixed with board name.
-        $url = sprintf(
-            '%s?fields=summary&maxResults=%d&jql=%s',
-            $this->endpoint,
-            count($issueNumbers),
-            rawurlencode(
-                "project=${projectName} AND key IN (${boardName}-" . implode(",${boardName}-", $issueNumbers) . ')'
-            )
-        );
-
-        // Run GET request to JIRA API
-        curl_setopt($this->curlHandler, CURLOPT_URL, $url);
-        $response =  json_decode(curl_exec($this->curlHandler), true) ?: [];
-
-        // Check if all issues were found
-        $issues = $response['issues'] ?? [];
-        if (count($issues) !== count($issueNumbers)) {
-            $foundIssueKeys = array_map(
-                function ($issue) {
-                    return preg_replace('/[^\d]/', '', $issue['key']);
-                },
-                $issues
-            );
-
-            return 'Could not find the following JIRA issues: '
-                . json_encode(array_diff($issueNumbers, $foundIssueKeys)) . "\n";
-        }
-
-        // Create replacement strings
-        $issueNumberReplacements = [];
-        foreach ($issues as $issue) {
-            $key = $issue['key'];
-            $issueKey = preg_replace('/[^\d]/', '', $key);
-            if (!in_array($issueKey, $issueNumbers)) {
-                echo "Issue ${key} not found.\n";
+        foreach ($prefixes as $prefix => $info) {
+            // Find JIRA issue numbers
+            $pattern = "/({$prefix}\d+)/";
+            $projectName = $info['project'] ?? '';
+            $boardName = $info['board'] ?? $projectName;
+            if (!$projectName || !$boardName) {
+                $outputText = $this->getErrorMessage($prefix, 'No project/board name specified') . $outputText;
+                continue;
             }
 
-            $issueNumberReplacements[] = '[' . $key . ' ' . ($issue['fields']['summary'] ?? '') . ']';
+            $matches = [];
+            if (!preg_match_all($pattern, $outputText, $matches, PREG_PATTERN_ORDER)) {
+                $outputText = $this->getErrorMessage($prefix, 'No JIRA issues found') . $outputText;
+                continue;
+            }
+            $issueNumbersWithPrefix = array_unique($matches[1]); // must filter out duplicates
+            $issueNumbers = array_map( // remove "j"
+                function ($val) {
+                    return str_replace('j', '', $val);
+                },
+                $issueNumbersWithPrefix
+            );
+
+            // Form url to JIRA API endpoint. Issue keys are numbers prefixed with board name.
+            $url = sprintf(
+                '%s?fields=summary&maxResults=%d&jql=%s',
+                $this->endpoint,
+                count($issueNumbers),
+                rawurlencode(
+                    "project=${projectName} AND key IN (${boardName}-" . implode(",${boardName}-", $issueNumbers) . ')'
+                )
+            );
+
+            // Run GET request to JIRA API
+            curl_setopt($this->curlHandler, CURLOPT_URL, $url);
+            $response =  json_decode(curl_exec($this->curlHandler), true) ?: [];
+
+            // Check if all issues were found
+            $issues = $response['issues'] ?? [];
+            if (count($issues) !== count($issueNumbers)) {
+                $foundIssueKeys = array_map(
+                    function ($issue) {
+                        return preg_replace('/[^\d]/', '', $issue['key']);
+                    },
+                    $issues
+                );
+
+                $message = 'Could not find the following JIRA issues (could be just one that is wrong) - '
+                    . json_encode(array_diff($issueNumbers, $foundIssueKeys));
+                $outputText = $this->getErrorMessage($prefix, $message) . $outputText;
+                continue;
+            }
+
+            // Create replacement strings
+            $issueNumberReplacements = [];
+            foreach ($issues as $issue) {
+                $key = $issue['key'];
+                $issueKey = preg_replace('/[^\d]/', '', $key);
+                if (!in_array($issueKey, $issueNumbers)) {
+                    $outputText = $this->getErrorMessage($prefix, "Issue ${key} not found") . $outputText;
+                    continue;
+                }
+
+                $issueNumberReplacements[] = '[' . $key . ' ' . ($issue['fields']['summary'] ?? '') . ']';
+            }
+
+            // Ensure same order before replacing strings
+            sort($issueNumbersWithPrefix);
+            sort($issueNumberReplacements);
+            $outputText = str_replace($issueNumbersWithPrefix, $issueNumberReplacements, $outputText);
         }
 
-        // Ensure same order before replacing strings
-        sort($issueNumbersWithPrefix);
-        sort($issueNumberReplacements);
-        return str_replace($issueNumbersWithPrefix, $issueNumberReplacements, $inputText);
+        return $outputText;
+    }
+
+    /**
+     * Get standardized error message
+     *
+     * @param string $prefix
+     * @param string $message
+     * @return string
+     */
+    protected function getErrorMessage($prefix, $message)
+    {
+        return sprintf("<Error>%s</Error>\n\n", "Prefix {$prefix}: {$message}");
     }
 }
