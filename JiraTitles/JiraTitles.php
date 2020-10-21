@@ -92,9 +92,9 @@ class JiraTitles
                 continue;
             }
             $issueNumbersWithPrefix = array_unique($matches[1]); // must filter out duplicates
-            $issueNumbers = array_map( // remove "j"
-                function ($val) {
-                    return str_replace('j', '', $val);
+            $issueNumbers = array_map( // remove prefix
+                function ($val) use ($prefix) {
+                    return str_replace($prefix, '', $val);
                 },
                 $issueNumbersWithPrefix
             );
