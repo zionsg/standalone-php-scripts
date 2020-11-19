@@ -77,6 +77,9 @@ git pull --depth=1 origin master
 - getMacIpFromArp<br>
   Get MAC addresses and their IPv4 addresses from `arp -a` output
 
+- groupCsv<br>
+  Parse CSV, group by the first X columns and return CSV
+
 - permutate<br>
   Generate permutations of a fixed length given a list of characters.
 
