@@ -2,6 +2,8 @@
 /**
  * Parse CSV, group by the first X columns and return CSV
  *
+ * See README.md for example.
+ *
  * To highlight different groups in Excel:
  *   - Open output CSV in Excel.
  *   - Select all cells.
@@ -18,6 +20,7 @@
  * If running via commandline and taking in 3 arguments to match the 3 method parameters:
  *   groupCsv($argv[1], $argv[2], $argv[3]);
  *
+ * @link  https://github.com/zionsg/standalone-php-scripts/tree/master/groupCsv
  * @param string $inputCsvPath Path to input CSV file
  * @param int $columnsToGroup No. of columns to group. 0="no grouping", 1="group by first column",
  *                            2="group by the first 2 columns", etc.
