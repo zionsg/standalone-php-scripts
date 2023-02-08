@@ -7,7 +7,7 @@
  *
  * `arp` only lists hosts that the current host has connected to. To populate it with all the live hosts on the same
  * LAN subnet, the following command can be run on Linux with nmap installed:
- *     ip route get 8.8.8.8 | awk '{print $NF; exit}' | cut -f1,2,3 -d"." | nmap -sn $(awk '{print $1".0/24"}')
+ *     nmap -sn $(ip --oneline route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p' | awk '{print $1"/24"}')
  *
  * @link   https://github.com/zionsg/standalone-php-scripts/tree/master/getMacIpFromArp
  * @param  string $arpOutput Output of `arp -a` command, retrieved from current host if not specified
